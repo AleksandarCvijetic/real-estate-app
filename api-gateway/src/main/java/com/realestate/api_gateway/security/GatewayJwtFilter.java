@@ -36,7 +36,7 @@ public class GatewayJwtFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        if (isPublicPath(path)) {
+        if (isPublicPath(request)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -73,10 +73,16 @@ public class GatewayJwtFilter extends OncePerRequestFilter {
         }
     }
 
-    private boolean isPublicPath(String path) {
-        return PUBLIC_PATHS.stream().anyMatch(path::startsWith);
-    }
+    private boolean isPublicPath(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        String method = request.getMethod();
 
+        if (path.startsWith("/api/users/auth/")) {
+            return true;
+        }
+
+        return "GET".equals(method) && path.startsWith("/api/listings/");
+    }
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
