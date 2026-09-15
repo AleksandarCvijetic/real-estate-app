@@ -81,8 +81,17 @@ public class GatewayJwtFilter extends OncePerRequestFilter {
             return true;
         }
 
-        return "GET".equals(method) && path.startsWith("/api/listings/");
+        if ("POST".equals(method) && path.equals("/api/listings/search")) {
+            return true;
+        }
+
+        if ("GET".equals(method) && path.startsWith("/api/listings/") && !path.equals("/api/listings/my")) {
+            return true;
+        }
+
+        return false;
     }
+
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
