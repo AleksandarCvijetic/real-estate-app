@@ -10,7 +10,10 @@ public interface FavoriteListingRepository extends JpaRepository<FavoriteListing
 
     List<FavoriteListing> findByUserId(Long userId);
 
-    Optional<FavoriteListing> findByListingIdAndUserId(Long listingId, Long userId);
+    Optional<FavoriteListing> findByUserIdAndListing_Id(Long userId, Long listingId);
 
     void deleteByListingIdAndUserId(Long listingId, Long userId);
+    
+    boolean existsByUserIdAndListing_Id(Long userId, Long listingId);
+
 }

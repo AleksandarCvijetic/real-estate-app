@@ -1,6 +1,5 @@
 package com.realestate.listing_service.security;
 
-import com.realestate.listing_service.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,8 +23,15 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/api/listings/search").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/listings/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/listings/my").authenticated()
+
+                        .requestMatchers(HttpMethod.POST, "/api/listings/report").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/listings/report/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/listings/report/**").hasRole("ADMIN")
+
+                        .requestMatchers("/api/listings/favorite/**").authenticated()
+
+                        .requestMatchers(HttpMethod.GET, "/api/listings/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
