@@ -6,6 +6,7 @@ import com.realestate.messaging_service.entity.BlockedUser;
 import com.realestate.messaging_service.entity.Conversation;
 import com.realestate.messaging_service.entity.Message;
 import com.realestate.messaging_service.entity.enums.MessageStatus;
+import com.realestate.messaging_service.kafka.MessageEventProducer;
 import com.realestate.messaging_service.mapper.MessageMapper;
 import com.realestate.messaging_service.repository.BlockedUserRepository;
 import com.realestate.messaging_service.repository.ConversationRepository;
@@ -26,6 +27,7 @@ public class MessageService {
     private final ConversationRepository conversationRepository;
     private final BlockedUserRepository blockedUserRepository;
     private final ConversationAccessValidator accessValidator;
+    private final MessageEventProducer messageEventProducer;
 
     @Transactional
     public MessageResponse send(Long conversationId, MessageCreateRequest request, Long senderId) {
@@ -52,6 +54,8 @@ public class MessageService {
 
         conversation.setLastMessageAt(message.getSentAt());
         conversationRepository.save(conversation);
+
+        messageEventProducer.publishMessageSent(message);
 
         return MessageMapper.toResponse(message);
     }
