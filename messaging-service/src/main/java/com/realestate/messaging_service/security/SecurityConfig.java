@@ -1,4 +1,4 @@
-package com.realestate.listing_service.security;
+package com.realestate.messaging_service.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +22,15 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
-                        //.requestMatchers(HttpMethod.POST, "/api/listings/report").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/listings/search").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/listings/my").authenticated()
+
+                        .requestMatchers(HttpMethod.POST, "/api/listings/report").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/listings/report/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/listings/report/**").hasRole("ADMIN")
+
+                        .requestMatchers("/api/listings/favorite/**").authenticated()
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
