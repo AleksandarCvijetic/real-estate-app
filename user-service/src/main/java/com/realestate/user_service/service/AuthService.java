@@ -5,11 +5,15 @@ import com.realestate.user_service.dto.LoginRequest;
 import com.realestate.user_service.dto.RegisterRequest;
 import com.realestate.user_service.entity.RefreshToken;
 import com.realestate.user_service.entity.User;
+import com.realestate.user_service.entity.VerificationToken;
+import com.realestate.user_service.event.EmailVerificationRequestedEvent;
 import com.realestate.user_service.repository.RefreshTokenRepository;
 import com.realestate.user_service.repository.UserRepository;
+import com.realestate.user_service.repository.VerificationTokenRepository;
 import com.realestate.user_service.security.JwtService;
 import com.realestate.user_service.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,12 +29,16 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
+    private final ApplicationEventPublisher eventPublisher;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
+    private static final long VERIFICATION_TOKEN_EXPIRATION_HOURS = 24;
+
     @Transactional
-    public AuthResponse register(RegisterRequest request) {
+    public void register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Email already in use");
         }
@@ -43,13 +51,50 @@ public class AuthService {
                 .accountType(request.getAccountType())
                 .role(com.realestate.user_service.entity.enums.Role.USER)
                 .createdAt(LocalDateTime.now())
-                .enabled(true) // bez email verifikacije za sada
+                .enabled(false) // nalog se aktivira tek nakon verifikacije emaila
                 .build();
 
         userRepository.save(user);
+        issueVerificationToken(user);
+    }
 
-        UserPrincipal userPrincipal = new UserPrincipal(user);
-        return generateAuthResponse(userPrincipal);
+    @Transactional
+    public void verifyEmail(String tokenValue) {
+        VerificationToken token = verificationTokenRepository.findByToken(tokenValue)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid or already used verification token"));
+
+        if (token.isExpired()) {
+            throw new IllegalArgumentException("Verification token expired, please request a new one");
+        }
+
+        token.getUser().setEnabled(true);
+        verificationTokenRepository.delete(token);
+    }
+
+    // Namerno ne otkriva da li nalog postoji: uvek uspeva, a mejl se salje samo neverifikovanim nalozima.
+    @Transactional
+    public void resendVerification(String email) {
+        userRepository.findByEmail(email)
+                .filter(user -> !user.isEnabled())
+                .ifPresent(user -> {
+                    verificationTokenRepository.deleteByUserId(user.getId());
+                    verificationTokenRepository.flush(); // user_id je unique, brisanje mora pre novog insert-a
+                    issueVerificationToken(user);
+                });
+    }
+
+    private void issueVerificationToken(User user) {
+        VerificationToken token = VerificationToken.builder()
+                .token(UUID.randomUUID().toString())
+                .user(user)
+                .expiryDate(LocalDateTime.now().plusHours(VERIFICATION_TOKEN_EXPIRATION_HOURS))
+                .build();
+
+        verificationTokenRepository.save(token);
+
+        eventPublisher.publishEvent(new EmailVerificationRequestedEvent(
+                user.getId(), user.getEmail(), user.getFirstName(), token.getToken()
+        ));
     }
 
     public AuthResponse login(LoginRequest request) {

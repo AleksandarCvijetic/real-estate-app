@@ -38,10 +38,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(await userApi.getCurrentUser());
   }, []);
 
+  // Nalog se aktivira tek verifikacijom emaila, pa registracija ne prijavljuje korisnika.
   const register = useCallback(async (data: RegisterRequest) => {
-    const authResponse = await authApi.register(data);
-    tokenStorage.setTokens(authResponse.accessToken, authResponse.refreshToken);
-    setUser(await userApi.getCurrentUser());
+    await authApi.register(data);
   }, []);
 
   const logout = useCallback(async () => {

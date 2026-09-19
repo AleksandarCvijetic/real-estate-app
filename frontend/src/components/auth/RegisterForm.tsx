@@ -1,12 +1,12 @@
 import { useState, type FormEvent } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { authApi } from "../../api/authApi";
 import { useAuth } from "../../context/AuthContext";
 import { getApiErrorMessage } from "../../lib/apiError";
 import type { AccountType } from "../../types/auth";
 
 export function RegisterForm() {
   const { register } = useAuth();
-  const navigate = useNavigate();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -15,6 +15,8 @@ export function RegisterForm() {
   const [accountType, setAccountType] = useState<AccountType>("INDIVIDUAL");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
+  const [resendStatus, setResendStatus] = useState<string | null>(null);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -22,12 +24,42 @@ export function RegisterForm() {
     setIsSubmitting(true);
     try {
       await register({ firstName, lastName, email, password, accountType });
-      navigate("/");
+      setRegisteredEmail(email);
     } catch (err) {
       setError(getApiErrorMessage(err));
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  async function handleResend() {
+    if (!registeredEmail) return;
+    setResendStatus(null);
+    try {
+      await authApi.resendVerification(registeredEmail);
+      setResendStatus("Poslali smo novi link. Proveri inbox.");
+    } catch (err) {
+      setResendStatus(getApiErrorMessage(err));
+    }
+  }
+
+  if (registeredEmail) {
+    return (
+      <div className="auth-form">
+        <h1>Proveri email</h1>
+        <p>
+          Poslali smo link za potvrdu na <strong>{registeredEmail}</strong>. Nalog možeš da koristiš tek nakon što
+          potvrdiš email adresu.
+        </p>
+        {resendStatus && <div className="auth-form__info">{resendStatus}</div>}
+        <button type="button" className="auth-form__link-button" onClick={handleResend}>
+          Pošalji link ponovo
+        </button>
+        <p className="auth-form__switch">
+          <Link to="/login">Nazad na prijavu</Link>
+        </p>
+      </div>
+    );
   }
 
   return (

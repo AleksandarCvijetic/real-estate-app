@@ -96,10 +96,13 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka
       EUREKA_INSTANCE_PREFERIPADDRESS: "true"
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/user_service_db
+      SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:29092
     depends_on:
       postgres:
         condition: service_healthy
       configuration-server:
+        condition: service_healthy
+      kafka:
         condition: service_healthy
 
   listing-service:

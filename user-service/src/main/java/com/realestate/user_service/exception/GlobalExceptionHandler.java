@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DisabledException.class)
     public ResponseEntity<Map<String, Object>> handleDisabledAccount(DisabledException ex) {
-        return buildResponse(HttpStatus.FORBIDDEN, "Account is disabled");
+        return buildResponse(HttpStatus.FORBIDDEN, "Email is not verified. Please check your inbox for the verification link.");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
