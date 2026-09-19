@@ -20,6 +20,9 @@ export function AppLayout() {
           </nav>
 
           <div className="app-header__user">
+            <Link to="/listings/new" className="btn btn--primary">
+              + Dodaj oglas
+            </Link>
             {user && (
               <span>
                 {user.firstName} {user.lastName}

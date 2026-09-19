@@ -24,6 +24,22 @@ export interface Listing {
   status: ListingStatus;
 }
 
+export interface ListingCreateRequest {
+  title: string;
+  description: string;
+  price: number;
+  area: number;
+  location: string;
+  listingType: ListingType;
+  numberOfRooms: number;
+  propertyType: PropertyType;
+  floor?: number;
+  furnishingStatus: FurnishingStatus;
+  heatingType: HeatingType;
+  parking: boolean;
+  petFriendly: boolean;
+}
+
 export interface ListingSearchRequest {
   location?: string;
   minPrice?: number;

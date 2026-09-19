@@ -1,4 +1,5 @@
 import type { FormEvent } from "react";
+import { NumberField } from "../forms/NumberField";
 import type { ListingFilterValues } from "../../lib/listingFilters";
 import { LISTING_TYPE_LABELS, PROPERTY_TYPE_LABELS, toOptions } from "../../lib/listingLabels";
 
@@ -10,29 +11,6 @@ interface ListingFiltersProps {
   onChange: (values: ListingFilterValues) => void;
   onSubmit: () => void;
   onReset: () => void;
-}
-
-interface NumberFieldProps {
-  label: string;
-  value: string;
-  step?: number;
-  onChange: (value: string) => void;
-}
-
-function NumberField({ label, value, step = 1, onChange }: NumberFieldProps) {
-  return (
-    <label className="field">
-      <span>{label}</span>
-      <input
-        className="control"
-        type="number"
-        min={0}
-        step={step}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      />
-    </label>
-  );
 }
 
 export function ListingFilters({ values, onChange, onSubmit, onReset }: ListingFiltersProps) {

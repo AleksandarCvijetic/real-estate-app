@@ -272,11 +272,15 @@ button {
 /* ---------- Shared controls ---------- */
 
 .btn {
+  display: inline-block;
   padding: 10px 16px;
   border: 1px solid transparent;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  text-decoration: none;
   cursor: pointer;
 }
 
@@ -374,6 +378,10 @@ button {
 .alert--error {
   background: var(--danger-bg);
   color: var(--danger);
+}
+
+.empty p {
+  margin: 0 0 16px;
 }
 
 .empty {
@@ -528,6 +536,47 @@ button {
   font-size: 14px;
 }
 
+/* ---------- Listing form ---------- */
+
+.form-card {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 800px;
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-section h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.control--textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.form-card__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
 /* ---------- Listing detail ---------- */
 
 .back-link {
@@ -614,7 +663,8 @@ button {
     flex-direction: column;
   }
 
-  .detail {
+  .detail,
+  .form-card {
     padding: 20px;
   }
 }

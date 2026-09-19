@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { listingApi } from "../api/listingApi";
 import { ListingCard } from "../components/listings/ListingCard";
 import { useAsyncData } from "../hooks/useAsyncData";
@@ -20,7 +21,14 @@ export function MyListingsPage() {
       {error && <div className="alert alert--error">{error}</div>}
       {isLoading && <p>Učitavanje...</p>}
 
-      {data && listings.length === 0 && <div className="empty">Još uvek nemaš nijedan oglas.</div>}
+      {data && listings.length === 0 && (
+        <div className="empty">
+          <p>Još uvek nemaš nijedan oglas.</p>
+          <Link to="/listings/new" className="btn btn--primary">
+            Dodaj prvi oglas
+          </Link>
+        </div>
+      )}
 
       {listings.length > 0 && (
         <div className="listing-grid">

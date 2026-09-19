@@ -1,5 +1,5 @@
 import { apiClient } from "./client";
-import type { Listing, ListingSearchRequest, Page } from "../types/listing";
+import type { Listing, ListingCreateRequest, ListingSearchRequest, Page } from "../types/listing";
 
 export interface SearchParams {
   page: number;
@@ -30,6 +30,8 @@ export const listingApi = {
     apiClient
       .post<RawPage<Listing>>("/listings/search", request, { params })
       .then((res) => normalizePage(res.data)),
+
+  create: (request: ListingCreateRequest) => apiClient.post<Listing>("/listings", request).then((res) => res.data),
 
   getMine: () => apiClient.get<Listing[]>("/listings/my").then((res) => res.data),
 

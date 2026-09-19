@@ -1,4 +1,5 @@
 import type { ListingSearchRequest, ListingType, PropertyType } from "../types/listing";
+import { parseNumber as toNumber } from "./parseNumber";
 
 // Vrednosti iz forme ostaju stringovi (kontrolisani inputi); u zahtev se pretvaraju tek pri primeni filtera.
 export interface ListingFilterValues {
@@ -26,13 +27,6 @@ export const EMPTY_FILTERS: ListingFilterValues = {
   parking: false,
   petFriendly: false,
 };
-
-function toNumber(value: string): number | undefined {
-  const trimmed = value.trim().replace(",", ".");
-  if (trimmed === "") return undefined;
-  const parsed = Number(trimmed);
-  return Number.isFinite(parsed) ? parsed : undefined;
-}
 
 // Prazna polja se izostavljaju; parking/ljubimci filtriraju samo kada su cekirani.
 export function toSearchRequest(values: ListingFilterValues): ListingSearchRequest {
