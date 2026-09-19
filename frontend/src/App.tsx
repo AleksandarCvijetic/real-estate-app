@@ -3,7 +3,10 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { VerifyEmailPage } from "./pages/VerifyEmailPage";
 import { HomePage } from "./pages/HomePage";
+import { MyListingsPage } from "./pages/MyListingsPage";
+import { ListingDetailPage } from "./pages/ListingDetailPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { AppLayout } from "./components/layout/AppLayout";
 
 function App() {
   return (
@@ -12,13 +15,16 @@ function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/verify-email" element={<VerifyEmailPage />} />
       <Route
-        path="/"
         element={
           <ProtectedRoute>
-            <HomePage />
+            <AppLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route path="/" element={<HomePage />} />
+        <Route path="/my-listings" element={<MyListingsPage />} />
+        <Route path="/listings/:id" element={<ListingDetailPage />} />
+      </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
