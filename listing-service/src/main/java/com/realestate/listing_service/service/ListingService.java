@@ -3,10 +3,13 @@ package com.realestate.listing_service.service;
 import com.realestate.listing_service.dto.*;
 import com.realestate.listing_service.entity.Listing;
 import com.realestate.listing_service.entity.enums.ListingStatus;
+import com.realestate.listing_service.event.ListingEvent;
+import com.realestate.listing_service.event.ListingEventType;
 import com.realestate.listing_service.mapper.ListingMapper;
 import com.realestate.listing_service.repository.ListingRepository;
 import com.realestate.listing_service.repository.ListingSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -21,6 +24,7 @@ import java.util.List;
 public class ListingService {
 
     private final ListingRepository listingRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public ListingResponse create(ListingCreateRequest request, Long ownerId) {
@@ -43,7 +47,10 @@ public class ListingService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        return ListingMapper.toResponse(listingRepository.save(listing));
+        Listing saved = listingRepository.save(listing);
+        eventPublisher.publishEvent(ListingEvent.of(ListingEventType.CREATED, saved));
+
+        return ListingMapper.toResponse(saved);
     }
 
     public ListingResponse getById(Long id) {
@@ -82,14 +89,20 @@ public class ListingService {
         if (request.getPetFriendly() != null) listing.setPetFriendly(request.getPetFriendly());
         if (request.getStatus() != null) listing.setStatus(request.getStatus());
 
-        return ListingMapper.toResponse(listingRepository.save(listing));
+        Listing saved = listingRepository.save(listing);
+        eventPublisher.publishEvent(ListingEvent.of(ListingEventType.UPDATED, saved));
+
+        return ListingMapper.toResponse(saved);
     }
 
     @Transactional
     public void delete(Long id, Long currentUserId) {
         Listing listing = findListingOrThrow(id);
         checkOwnership(listing, currentUserId);
+
+        Long listingId = listing.getId();
         listingRepository.delete(listing);
+        eventPublisher.publishEvent(ListingEvent.deleted(listingId));
     }
 
     private Listing findListingOrThrow(Long id) {

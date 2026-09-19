@@ -22,6 +22,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/api/listings/admin/**").hasRole("ADMIN")
                         //.requestMatchers(HttpMethod.POST, "/api/listings/report").authenticated()
                         .anyRequest().authenticated()
                 )
