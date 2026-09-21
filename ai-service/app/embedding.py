@@ -19,7 +19,7 @@ def get_model() -> SentenceTransformer:
 def _encode(text: str) -> list[float]:
     # normalize_embeddings=True: vektori se skaliraju na duzinu 1,
     # pa je kosinusna slicnost jednaka skalarnom proizvodu
-    vektor = get_model().encode(text, normalize_embeddings=True)
+    vektor = get_model().encode(text, normalize_embeddings=True, show_progress_bar=False)
     return vektor.tolist()
 
 

@@ -6,20 +6,23 @@ from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
 
 
+class CamelModel(BaseModel):
+    """
+    Osnova za sve modele: u JSON-u su polja u camelCase obliku (listingId),
+    a u Pythonu u snake_case (listing_id). Prevod radi alias_generator.
+    """
+
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
+
 class ListingEventType(str, Enum):
     CREATED = "CREATED"
     UPDATED = "UPDATED"
     DELETED = "DELETED"
 
 
-class ListingEvent(BaseModel):
-    """
-    Dogadjaj koji Listing servis salje na Kafka topic "listing-events".
-    Polja u JSON-u su u camelCase obliku (listingId), a u Pythonu u snake_case
-    (listing_id) - alias_generator prevodi jedno u drugo.
-    """
-
-    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+class ListingEvent(CamelModel):
+    """Dogadjaj koji Listing servis salje na Kafka topic "listing-events"."""
 
     event_type: ListingEventType
     listing_id: int
@@ -41,16 +44,16 @@ class ListingEvent(BaseModel):
     occurred_at: datetime | None = None
 
 
-class SearchRequest(BaseModel):
+class SearchRequest(CamelModel):
     query: str
     top_k: int | None = None
 
 
-class SearchResult(BaseModel):
+class SearchResult(CamelModel):
     listing_id: int
     score: float
 
 
-class SearchResponse(BaseModel):
+class SearchResponse(CamelModel):
     query: str
     results: list[SearchResult]

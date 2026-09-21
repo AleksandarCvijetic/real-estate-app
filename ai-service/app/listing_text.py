@@ -61,6 +61,16 @@ def _floor_text(floor: int | None) -> str | None:
         return "suteren"
     return f"{floor}. sprat"
 
+def _size_text(area: float | None, property_type: str | None) -> str | None:
+    if area is None:
+        return None
+    if property_type == "APARTMENT" and area <= 35:
+        return "Mali stan"
+    if property_type == "APARTMENT" and area >= 85:
+        return "Prostran stan"
+    if property_type == "HOUSE" and area >= 150:
+        return "Velika kuća"
+    return None
 
 def build_listing_text(event: ListingEvent) -> str:
     """Sastavlja tekst oglasa od podataka iz dogadjaja."""
@@ -77,6 +87,10 @@ def build_listing_text(event: ListingEvent) -> str:
     if sobe:
         prva += f", {sobe}"
     recenice.append(prva + ".")
+
+    opis_velicine = _size_text(event.area, event.property_type)
+    if opis_velicine:
+        recenice.append(f"{opis_velicine}.")
 
     # 2. Lokacija
     if event.location:
