@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+pydantic-settings
+sentence-transformers
+sqlalchemy
+psycopg[binary]
+pgvector
+aiokafka
+py-eureka-client
