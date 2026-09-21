@@ -30,6 +30,9 @@ class Settings(BaseSettings):
     app_name: str = "ai-service"
     service_port: int = 8085
     eureka_server: str = "http://localhost:8761/eureka"
+    # adresa pod kojom ga drugi servisi pozivaju: lokalno "localhost",
+    # u Docker-u ime kontejnera ("ai-service")
+    instance_host: str = "localhost"
 
 
 settings = Settings()
