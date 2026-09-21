@@ -3,6 +3,7 @@ package com.realestate.listing_service.controller;
 import com.realestate.listing_service.dto.*;
 import com.realestate.listing_service.security.SecurityUtils;
 import com.realestate.listing_service.service.ListingService;
+import com.realestate.listing_service.service.SemanticSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,7 @@ import java.util.List;
 public class ListingController {
 
     private final ListingService listingService;
+    private final SemanticSearchService semanticSearchService;
 
     @PostMapping
     public ResponseEntity<ListingResponse> create(@Valid @RequestBody ListingCreateRequest request) {
@@ -38,6 +40,13 @@ public class ListingController {
             @PageableDefault(size = 20) Pageable pageable
     ) {
         return ResponseEntity.ok(listingService.search(request, pageable));
+    }
+
+    @PostMapping("/semantic-search")
+    public ResponseEntity<List<SemanticListingResponse>> semanticSearch(
+            @Valid @RequestBody SemanticSearchRequest request
+    ) {
+        return ResponseEntity.ok(semanticSearchService.search(request));
     }
 
     @GetMapping("/my")
