@@ -1,21 +1,22 @@
 package com.realestate.notification_service.service;
 
+import com.realestate.notification_service.client.UserServiceClient;
 import com.realestate.notification_service.event.EmailVerificationRequestedEvent;
 import com.realestate.notification_service.event.MessageSentEvent;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailService {
 
     private final JavaMailSender mailSender;
-
-    @Value("${notification.test-recipient-email}")
-    private String testRecipientEmail; // TODO (petak): zameniti pozivom GET /users/{receiverId} ka User servisu
+    private final UserServiceClient userServiceClient;
 
     @Value("${notification.frontend-url}")
     private String frontendUrl;
@@ -32,10 +33,17 @@ public class EmailService {
     }
 
     public void sendNewMessageNotification(MessageSentEvent event) {
-        SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setTo(testRecipientEmail);
-        mail.setSubject("Imate novu poruku");
-        mail.setText("Dobili ste novu poruku: \"" + event.messageText() + "\"");
-        mailSender.send(mail);
+        userServiceClient.getUser(event.receiverId()).ifPresentOrElse(
+                receiver -> {
+                    SimpleMailMessage mail = new SimpleMailMessage();
+                    mail.setTo(receiver.email());
+                    mail.setSubject("Imate novu poruku");
+                    mail.setText("Zdravo " + receiver.firstName() + ",\n\n"
+                            + "Dobili ste novu poruku: \"" + event.messageText() + "\"");
+                    mailSender.send(mail);
+                },
+                () -> log.warn("Ne mogu da pronadjem korisnika {} - notifikacija o poruci nije poslata",
+                        event.receiverId())
+        );
     }
 }
