@@ -1,11 +1,14 @@
 package com.realestate.listing_service.mapper;
 
+import com.realestate.listing_service.dto.ListingImageResponse;
 import com.realestate.listing_service.dto.ListingResponse;
 import com.realestate.listing_service.entity.Listing;
 
+import java.util.List;
+
 public class ListingMapper {
 
-    public static ListingResponse toResponse(Listing listing) {
+    public static ListingResponse toResponse(Listing listing, List<ListingImageResponse> images) {
         return ListingResponse.builder()
                 .id(listing.getId())
                 .ownerId(listing.getOwnerId())
@@ -25,6 +28,7 @@ public class ListingMapper {
                 .createdAt(listing.getCreatedAt())
                 .status(listing.getStatus())
                 .petFriendly(listing.isPetFriendly())
+                .images(images)
                 .build();
     }
 }

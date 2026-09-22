@@ -1,9 +1,10 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { listingApi } from "../api/listingApi";
 import { useAuth } from "../context/AuthContext";
 import { useAsyncData } from "../hooks/useAsyncData";
 import { formatArea, formatBoolean, formatDate, formatFloor, formatPrice, formatRooms } from "../lib/format";
+import { resolveImageUrl } from "../lib/imageUrl";
 import {
   FURNISHING_LABELS,
   HEATING_LABELS,
@@ -19,6 +20,13 @@ export function ListingDetailPage() {
 
   const fetchListing = useCallback(() => listingApi.getById(id), [id]);
   const { data: listing, error, isLoading } = useAsyncData(fetchListing);
+
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [galleryListingId, setGalleryListingId] = useState<number | undefined>(undefined);
+  if (listing && listing.id !== galleryListingId) {
+    setGalleryListingId(listing.id);
+    setActiveImageIndex(0);
+  }
 
   const facts = listing
     ? [
@@ -46,6 +54,28 @@ export function ListingDetailPage() {
 
       {listing && (
         <article className="detail">
+          {listing.images.length > 0 && (
+            <div className="detail__gallery">
+              <div className="detail__gallery-main">
+                <img src={resolveImageUrl(listing.images[activeImageIndex].url)} alt={listing.title} />
+              </div>
+              {listing.images.length > 1 && (
+                <div className="detail__gallery-thumbs">
+                  {listing.images.map((image, index) => (
+                    <button
+                      key={image.id}
+                      type="button"
+                      className={`detail__gallery-thumb${index === activeImageIndex ? " is-active" : ""}`}
+                      onClick={() => setActiveImageIndex(index)}
+                    >
+                      <img src={resolveImageUrl(image.url)} alt="" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           <header className="detail__header">
             <div className="listing-card__badges">
               <span className="badge badge--accent">{LISTING_TYPE_LABELS[listing.listingType]}</span>

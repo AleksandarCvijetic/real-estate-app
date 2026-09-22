@@ -1,5 +1,5 @@
 import { apiClient } from "./client";
-import type { Listing, ListingCreateRequest, ListingSearchRequest, Page } from "../types/listing";
+import type { Listing, ListingCreateRequest, ListingImage, ListingSearchRequest, Page } from "../types/listing";
 
 export interface SearchParams {
   page: number;
@@ -36,4 +36,12 @@ export const listingApi = {
   getMine: () => apiClient.get<Listing[]>("/listings/my").then((res) => res.data),
 
   getById: (id: string) => apiClient.get<Listing>(`/listings/${encodeURIComponent(id)}`).then((res) => res.data),
+
+  uploadImages: (listingId: number, files: File[]) => {
+    const formData = new FormData();
+    files.forEach((file) => formData.append("files", file));
+    return apiClient
+      .post<ListingImage[]>(`/listings/${listingId}/images`, formData)
+      .then((res) => res.data);
+  },
 };

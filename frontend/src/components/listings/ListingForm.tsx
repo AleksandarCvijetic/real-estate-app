@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { NumberField } from "../forms/NumberField";
 import { getApiErrorMessage } from "../../lib/apiError";
@@ -16,6 +16,85 @@ const LISTING_TYPE_OPTIONS = toOptions(LISTING_TYPE_LABELS);
 const PROPERTY_TYPE_OPTIONS = toOptions(PROPERTY_TYPE_LABELS);
 const FURNISHING_OPTIONS = toOptions(FURNISHING_LABELS);
 const HEATING_OPTIONS = toOptions(HEATING_LABELS);
+
+const MAX_IMAGES = 5;
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
+interface ImagePickerProps {
+  images: File[];
+  onChange: (images: File[]) => void;
+}
+
+function ImagePicker({ images, onChange }: ImagePickerProps) {
+  const previews = useMemo(() => images.map((file) => URL.createObjectURL(file)), [images]);
+  const [error, setError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    return () => previews.forEach((url) => URL.revokeObjectURL(url));
+  }, [previews]);
+
+  function handleFilesSelected(e: React.ChangeEvent<HTMLInputElement>) {
+    const selected = Array.from(e.target.files ?? []);
+    e.target.value = "";
+    if (selected.length === 0) return;
+
+    const invalid = selected.find((file) => !ALLOWED_IMAGE_TYPES.includes(file.type));
+    if (invalid) {
+      setError("Dozvoljeni su samo JPEG, PNG i WEBP fajlovi.");
+      return;
+    }
+
+    if (images.length + selected.length > MAX_IMAGES) {
+      setError(`Maksimalno ${MAX_IMAGES} slika po oglasu.`);
+      return;
+    }
+
+    setError(null);
+    onChange([...images, ...selected]);
+  }
+
+  function removeImage(index: number) {
+    onChange(images.filter((_, i) => i !== index));
+  }
+
+  return (
+    <div className="image-picker">
+      {error && <div className="alert alert--error">{error}</div>}
+      <div className="image-picker__grid">
+        {previews.map((src, index) => (
+          <div key={src} className="image-picker__thumb">
+            <img src={src} alt={`Slika ${index + 1}`} />
+            <button
+              type="button"
+              className="image-picker__remove"
+              aria-label="Ukloni sliku"
+              onClick={() => removeImage(index)}
+            >
+              ×
+            </button>
+          </div>
+        ))}
+        {images.length < MAX_IMAGES && (
+          <button type="button" className="image-picker__add" onClick={() => inputRef.current?.click()}>
+            + Dodaj sliku
+          </button>
+        )}
+      </div>
+      <input
+        ref={inputRef}
+        type="file"
+        accept={ALLOWED_IMAGE_TYPES.join(",")}
+        multiple
+        hidden
+        onChange={handleFilesSelected}
+      />
+      <span className="image-picker__counter">
+        {images.length}/{MAX_IMAGES} slika
+      </span>
+    </div>
+  );
+}
 
 interface SelectFieldProps<T extends string> {
   label: string;
@@ -47,11 +126,12 @@ interface ListingFormProps {
   submitLabel: string;
   submittingLabel: string;
   cancelTo: string;
-  onSubmit: (request: ListingCreateRequest) => Promise<void>;
+  onSubmit: (request: ListingCreateRequest, images: File[]) => Promise<void>;
 }
 
 export function ListingForm({ submitLabel, submittingLabel, cancelTo, onSubmit }: ListingFormProps) {
   const [values, setValues] = useState<ListingFormValues>(EMPTY_LISTING_FORM);
+  const [images, setImages] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -71,7 +151,7 @@ export function ListingForm({ submitLabel, submittingLabel, cancelTo, onSubmit }
 
     setIsSubmitting(true);
     try {
-      await onSubmit(request);
+      await onSubmit(request, images);
     } catch (err) {
       setError(getApiErrorMessage(err));
       setIsSubmitting(false);
@@ -201,6 +281,11 @@ export function ListingForm({ submitLabel, submittingLabel, cancelTo, onSubmit }
             Ljubimci dozvoljeni
           </label>
         </div>
+      </section>
+
+      <section className="form-section">
+        <h2>Slike</h2>
+        <ImagePicker images={images} onChange={setImages} />
       </section>
 
       <section className="form-section">

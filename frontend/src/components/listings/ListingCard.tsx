@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import type { Listing } from "../../types/listing";
 import { formatArea, formatFloor, formatPrice, formatRooms } from "../../lib/format";
+import { resolveImageUrl } from "../../lib/imageUrl";
 import {
   LISTING_STATUS_BADGES,
   LISTING_STATUS_LABELS,
@@ -14,8 +15,18 @@ interface ListingCardProps {
 }
 
 export function ListingCard({ listing, showStatus = false }: ListingCardProps) {
+  const coverImage = listing.images[0];
+
   return (
     <Link to={`/listings/${listing.id}`} className="listing-card">
+      <div className="listing-card__image">
+        {coverImage ? (
+          <img src={resolveImageUrl(coverImage.url)} alt={listing.title} loading="lazy" />
+        ) : (
+          <div className="listing-card__image-placeholder">Nema slike</div>
+        )}
+      </div>
+
       <div className="listing-card__badges">
         <span className="badge badge--accent">{LISTING_TYPE_LABELS[listing.listingType]}</span>
         <span className="badge">{PROPERTY_TYPE_LABELS[listing.propertyType]}</span>

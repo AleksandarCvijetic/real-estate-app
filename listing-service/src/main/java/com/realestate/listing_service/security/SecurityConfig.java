@@ -27,6 +27,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,
                                 "/api/listings/search",
                                 "/api/listings/semantic-search").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/listings/*/images/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

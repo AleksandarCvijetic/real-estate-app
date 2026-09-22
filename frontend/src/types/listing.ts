@@ -4,6 +4,12 @@ export type FurnishingStatus = "FURNISHED" | "SEMI_FURNISHED" | "UNFURNISHED";
 export type HeatingType = "CENTRAL" | "ETAZNO" | "TA_PEC" | "ELECTRIC" | "GAS" | "NONE";
 export type ListingStatus = "ACTIVE" | "RENTED" | "SOLD" | "INACTIVE";
 
+export interface ListingImage {
+  id: number;
+  url: string;
+  displayOrder: number;
+}
+
 export interface Listing {
   id: number;
   ownerId: number;
@@ -23,6 +29,7 @@ export interface Listing {
   petFriendly: boolean;
   createdAt: string;
   status: ListingStatus;
+  images: ListingImage[];
 }
 
 export interface ListingCreateRequest {

@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -31,4 +32,5 @@ public class ListingResponse {
     private LocalDateTime createdAt;
     private ListingStatus status;
     private boolean petFriendly;
+    private List<ListingImageResponse> images;
 }

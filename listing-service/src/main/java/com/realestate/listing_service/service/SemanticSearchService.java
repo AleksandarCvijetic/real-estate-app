@@ -2,6 +2,7 @@ package com.realestate.listing_service.service;
 
 import com.realestate.listing_service.client.AiSearchResult;
 import com.realestate.listing_service.client.AiServiceClient;
+import com.realestate.listing_service.dto.ListingImageResponse;
 import com.realestate.listing_service.dto.ListingSearchRequest;
 import com.realestate.listing_service.dto.SemanticListingResponse;
 import com.realestate.listing_service.dto.SemanticSearchRequest;
@@ -40,6 +41,7 @@ public class SemanticSearchService {
 
     private final AiServiceClient aiServiceClient;
     private final ListingRepository listingRepository;
+    private final ListingImageService listingImageService;
 
     @Transactional(readOnly = true)
     public List<SemanticListingResponse> search(SemanticSearchRequest request) {
@@ -63,13 +65,18 @@ public class SemanticSearchService {
         Map<Long, Listing> listingsById = listingRepository.findAll(spec).stream()
                 .collect(Collectors.toMap(Listing::getId, Function.identity()));
 
+        Map<Long, List<ListingImageResponse>> imagesByListing =
+                listingImageService.getImagesForListings(listingsById.keySet().stream().toList());
+
         int limit = request.getLimit() != null ? request.getLimit() : DEFAULT_LIMIT;
 
         return scores.entrySet().stream()
                 .filter(e -> listingsById.containsKey(e.getKey()))
                 .limit(limit)
                 .map(e -> new SemanticListingResponse(
-                        ListingMapper.toResponse(listingsById.get(e.getKey())),
+                        ListingMapper.toResponse(
+                                listingsById.get(e.getKey()),
+                                imagesByListing.getOrDefault(e.getKey(), List.of())),
                         e.getValue()))
                 .toList();
     }

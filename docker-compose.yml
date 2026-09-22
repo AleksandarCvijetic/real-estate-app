@@ -116,6 +116,8 @@ services:
       EUREKA_INSTANCE_PREFERIPADDRESS: "true"
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/listing_service_db
       SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:29092
+    volumes:
+      - listing-images:/app/uploads/listings
     depends_on:
       postgres:
         condition: service_healthy
@@ -187,3 +189,4 @@ services:
 volumes:
   postgres-data:
   kafka-data:
+  listing-images:

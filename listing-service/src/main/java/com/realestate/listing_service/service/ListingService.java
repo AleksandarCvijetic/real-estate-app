@@ -18,12 +18,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class ListingService {
 
     private final ListingRepository listingRepository;
+    private final ListingImageService listingImageService;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
@@ -51,22 +53,29 @@ public class ListingService {
         Listing saved = listingRepository.save(listing);
         eventPublisher.publishEvent(ListingEvent.of(ListingEventType.CREATED, saved));
 
-        return ListingMapper.toResponse(saved);
+        return ListingMapper.toResponse(saved, List.of());
     }
 
     public ListingResponse getById(Long id) {
-        return ListingMapper.toResponse(findListingOrThrow(id));
+        Listing listing = findListingOrThrow(id);
+        return ListingMapper.toResponse(listing, listingImageService.getImagesForListing(id));
     }
 
     public Page<ListingResponse> search(ListingSearchRequest request, Pageable pageable) {
-        return listingRepository
-                .findAll(ListingSpecification.withFilters(request), pageable)
-                .map(ListingMapper::toResponse);
+        Page<Listing> page = listingRepository.findAll(ListingSpecification.withFilters(request), pageable);
+        Map<Long, List<ListingImageResponse>> imagesByListing =
+                listingImageService.getImagesForListings(page.getContent().stream().map(Listing::getId).toList());
+        return page.map(listing -> ListingMapper.toResponse(
+                listing, imagesByListing.getOrDefault(listing.getId(), List.of())));
     }
 
     public List<ListingResponse> getByOwner(Long ownerId) {
-        return listingRepository.findByOwnerId(ownerId).stream()
-                .map(ListingMapper::toResponse)
+        List<Listing> listings = listingRepository.findByOwnerId(ownerId);
+        Map<Long, List<ListingImageResponse>> imagesByListing =
+                listingImageService.getImagesForListings(listings.stream().map(Listing::getId).toList());
+        return listings.stream()
+                .map(listing -> ListingMapper.toResponse(
+                        listing, imagesByListing.getOrDefault(listing.getId(), List.of())))
                 .toList();
     }
 
@@ -94,7 +103,7 @@ public class ListingService {
         Listing saved = listingRepository.save(listing);
         eventPublisher.publishEvent(ListingEvent.of(ListingEventType.UPDATED, saved));
 
-        return ListingMapper.toResponse(saved);
+        return ListingMapper.toResponse(saved, listingImageService.getImagesForListing(saved.getId()));
     }
 
     @Transactional
@@ -103,6 +112,7 @@ public class ListingService {
         checkOwnership(listing, currentUserId);
 
         Long listingId = listing.getId();
+        listingImageService.deleteAllForListing(listingId);
         listingRepository.delete(listing);
         eventPublisher.publishEvent(ListingEvent.deleted(listingId));
     }
