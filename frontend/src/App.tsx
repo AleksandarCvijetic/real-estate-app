@@ -6,6 +6,7 @@ import { HomePage } from "./pages/HomePage";
 import { MyListingsPage } from "./pages/MyListingsPage";
 import { ListingDetailPage } from "./pages/ListingDetailPage";
 import { CreateListingPage } from "./pages/CreateListingPage";
+import { ProfilePage } from "./pages/ProfilePage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AppLayout } from "./components/layout/AppLayout";
 
@@ -26,6 +27,7 @@ function App() {
         <Route path="/my-listings" element={<MyListingsPage />} />
         <Route path="/listings/new" element={<CreateListingPage />} />
         <Route path="/listings/:id" element={<ListingDetailPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
