@@ -81,7 +81,9 @@ public class GatewayJwtFilter extends OncePerRequestFilter {
             return true;
         }
 
-        if ("POST".equals(method) && path.equals("/api/listings/search")) {
+        if ("POST".equals(method)
+                && (path.equals("/api/listings/search")
+                || path.equals("/api/listings/semantic-search"))) {
             return true;
         }
 

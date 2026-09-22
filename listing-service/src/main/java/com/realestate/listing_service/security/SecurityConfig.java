@@ -24,6 +24,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/listings/admin/**").hasRole("ADMIN")
                         //.requestMatchers(HttpMethod.POST, "/api/listings/report").authenticated()
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/listings/search",
+                                "/api/listings/semantic-search").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

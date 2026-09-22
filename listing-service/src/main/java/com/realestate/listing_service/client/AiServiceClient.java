@@ -36,7 +36,7 @@ public class AiServiceClient {
                     .body(AiSearchResponse.class);
 
             return response == null || response.results() == null ? List.of() : response.results();
-        } catch (RestClientException e) {
+        } catch (RestClientException | IllegalStateException e) {
             log.error("Poziv AI servisa nije uspeo", e);
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
                     "Semanticka pretraga trenutno nije dostupna");
