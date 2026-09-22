@@ -1,5 +1,13 @@
 import { apiClient } from "./client";
-import type { Listing, ListingCreateRequest, ListingImage, ListingSearchRequest, Page } from "../types/listing";
+import type {
+  FavoriteListing,
+  Listing,
+  ListingCreateRequest,
+  ListingImage,
+  ListingSearchRequest,
+  Page,
+  ReportCreateRequest,
+} from "../types/listing";
 
 export interface SearchParams {
   page: number;
@@ -44,4 +52,15 @@ export const listingApi = {
       .post<ListingImage[]>(`/listings/${listingId}/images`, formData)
       .then((res) => res.data);
   },
+
+  getMyFavorites: () => apiClient.get<FavoriteListing[]>("/listings/favorite/my").then((res) => res.data),
+
+  addFavorite: (listingId: number) =>
+    apiClient.post<FavoriteListing>(`/listings/favorite/${listingId}`).then((res) => res.data),
+
+  removeFavorite: (listingId: number) =>
+    apiClient.delete<void>(`/listings/favorite/${listingId}`).then((res) => res.data),
+
+  report: (request: ReportCreateRequest) =>
+    apiClient.post<unknown>("/listings/report", request).then(() => undefined),
 };

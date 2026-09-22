@@ -7,6 +7,7 @@ import { MyListingsPage } from "./pages/MyListingsPage";
 import { ListingDetailPage } from "./pages/ListingDetailPage";
 import { CreateListingPage } from "./pages/CreateListingPage";
 import { ProfilePage } from "./pages/ProfilePage";
+import { FavoritesPage } from "./pages/FavoritesPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AppLayout } from "./components/layout/AppLayout";
 
@@ -25,6 +26,7 @@ function App() {
       >
         <Route path="/" element={<HomePage />} />
         <Route path="/my-listings" element={<MyListingsPage />} />
+        <Route path="/favorites" element={<FavoritesPage />} />
         <Route path="/listings/new" element={<CreateListingPage />} />
         <Route path="/listings/:id" element={<ListingDetailPage />} />
         <Route path="/profile" element={<ProfilePage />} />

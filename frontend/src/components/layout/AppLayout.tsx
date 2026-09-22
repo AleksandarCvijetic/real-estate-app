@@ -1,11 +1,12 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { FavoritesProvider } from "../../context/FavoritesContext";
 
 export function AppLayout() {
   const { user, logout } = useAuth();
 
   return (
-    <>
+    <FavoritesProvider>
       <header className="app-header">
         <div className="container app-header__inner">
           <Link to="/" className="app-header__brand">
@@ -17,6 +18,7 @@ export function AppLayout() {
               Oglasi
             </NavLink>
             <NavLink to="/my-listings">Moji oglasi</NavLink>
+            <NavLink to="/favorites">Omiljeni</NavLink>
           </nav>
 
           <div className="app-header__user">
@@ -38,6 +40,6 @@ export function AppLayout() {
       <main className="container app-main">
         <Outlet />
       </main>
-    </>
+    </FavoritesProvider>
   );
 }

@@ -68,3 +68,16 @@ export interface Page<T> {
   totalPages: number;
   number: number;
 }
+
+export interface FavoriteListing {
+  id: number;
+  listingId: number;
+  createdAt: string;
+}
+
+export type ReportReason = "SPAM" | "INAPPROPRIATE_CONTENT" | "MISLEADING_INFORMATION" | "DUPLICATE" | "OTHER";
+
+export interface ReportCreateRequest {
+  listingId: number;
+  reason: ReportReason;
+}

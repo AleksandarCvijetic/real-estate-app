@@ -1,4 +1,11 @@
-import type { FurnishingStatus, HeatingType, ListingStatus, ListingType, PropertyType } from "../types/listing";
+import type {
+  FurnishingStatus,
+  HeatingType,
+  ListingStatus,
+  ListingType,
+  PropertyType,
+  ReportReason,
+} from "../types/listing";
 
 export const LISTING_TYPE_LABELS: Record<ListingType, string> = {
   RENT: "Izdavanje",
@@ -43,3 +50,11 @@ export const LISTING_STATUS_BADGES: Record<ListingStatus, string> = {
 export function toOptions<T extends string>(labels: Record<T, string>): { value: T; label: string }[] {
   return (Object.keys(labels) as T[]).map((value) => ({ value, label: labels[value] }));
 }
+
+export const REPORT_REASON_LABELS: Record<ReportReason, string> = {
+  SPAM: "Spam",
+  INAPPROPRIATE_CONTENT: "Neprikladan sadržaj",
+  MISLEADING_INFORMATION: "Netačne ili obmanjujuće informacije",
+  DUPLICATE: "Duplikat oglasa",
+  OTHER: "Drugo",
+};

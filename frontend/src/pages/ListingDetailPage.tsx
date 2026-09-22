@@ -3,6 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import { listingApi } from "../api/listingApi";
 import { useAuth } from "../context/AuthContext";
 import { useAsyncData } from "../hooks/useAsyncData";
+import { FavoriteButton } from "../components/listings/FavoriteButton";
+import { ReportListingButton } from "../components/listings/ReportListingButton";
 import { formatArea, formatBoolean, formatDate, formatFloor, formatPrice, formatRooms } from "../lib/format";
 import { resolveImageUrl } from "../lib/imageUrl";
 import {
@@ -90,6 +92,12 @@ export function ListingDetailPage() {
               {formatPrice(listing.price)}
               {listing.listingType === "RENT" && <small> / mesečno</small>}
             </p>
+            {user?.id !== listing.ownerId && (
+              <div className="detail__actions">
+                <FavoriteButton listingId={listing.id} ownerId={listing.ownerId} variant="labeled" />
+                <ReportListingButton listingId={listing.id} />
+              </div>
+            )}
           </header>
 
           <section className="detail__section">
