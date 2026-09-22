@@ -24,9 +24,9 @@ export function AppLayout() {
               + Dodaj oglas
             </Link>
             {user && (
-              <span>
+              <Link to="/profile" className="app-header__profile">
                 {user.firstName} {user.lastName}
-              </span>
+              </Link>
             )}
             <button type="button" className="btn btn--ghost" onClick={() => logout()}>
               Odjavi se

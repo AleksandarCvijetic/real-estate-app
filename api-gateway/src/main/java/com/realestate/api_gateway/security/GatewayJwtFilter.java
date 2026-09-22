@@ -23,18 +23,12 @@ public class GatewayJwtFilter extends OncePerRequestFilter {
     @Value("${jwt.secret}")
     private String secret;
 
-    private static final List<String> PUBLIC_PATHS = List.of(
-            "/api/users/auth/"
-    );
-
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-
-        String path = request.getRequestURI();
 
         if (isPublicPath(request)) {
             filterChain.doFilter(request, response);
@@ -65,11 +59,9 @@ public class GatewayJwtFilter extends OncePerRequestFilter {
             wrappedRequest.addHeader("X-User-Role", role);
 
             filterChain.doFilter(wrappedRequest, response);
-            return;
 
         } catch (JwtException | IllegalArgumentException e) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
-            return;
         }
     }
 
