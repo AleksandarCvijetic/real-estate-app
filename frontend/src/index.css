@@ -98,6 +98,7 @@ button {
 
 .auth-form__row .auth-form__field {
   flex: 1;
+  min-width: 0;
 }
 
 .auth-form__field {
@@ -114,6 +115,7 @@ button {
 
 .auth-form__field input,
 .auth-form__field select {
+  width: 100%;
   font: inherit;
   padding: 10px 12px;
   border: 1px solid var(--border);
