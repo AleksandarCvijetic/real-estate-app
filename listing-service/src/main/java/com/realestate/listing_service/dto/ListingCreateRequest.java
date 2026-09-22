@@ -30,6 +30,9 @@ public class ListingCreateRequest {
     @NotBlank
     private String location;
 
+    @NotBlank
+    private String phoneNumber;
+
     @NotNull
     private ListingType listingType;
 

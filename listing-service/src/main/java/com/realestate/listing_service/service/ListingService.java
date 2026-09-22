@@ -35,6 +35,7 @@ public class ListingService {
                 .price(request.getPrice())
                 .area(request.getArea())
                 .location(request.getLocation())
+                .phoneNumber(request.getPhoneNumber())
                 .listingType(request.getListingType())
                 .numberOfRooms(request.getNumberOfRooms())
                 .propertyType(request.getPropertyType())
@@ -79,6 +80,7 @@ public class ListingService {
         if (request.getPrice() != null) listing.setPrice(request.getPrice());
         if (request.getArea() != null) listing.setArea(request.getArea());
         if (request.getLocation() != null) listing.setLocation(request.getLocation());
+        if (request.getPhoneNumber() != null) listing.setPhoneNumber(request.getPhoneNumber());
         if (request.getListingType() != null) listing.setListingType(request.getListingType());
         if (request.getNumberOfRooms() != null) listing.setNumberOfRooms(request.getNumberOfRooms());
         if (request.getPropertyType() != null) listing.setPropertyType(request.getPropertyType());

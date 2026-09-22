@@ -12,6 +12,7 @@ export interface Listing {
   price: number;
   area: number;
   location: string;
+  phoneNumber: string;
   listingType: ListingType;
   numberOfRooms: number;
   propertyType: PropertyType;
@@ -30,6 +31,7 @@ export interface ListingCreateRequest {
   price: number;
   area: number;
   location: string;
+  phoneNumber: string;
   listingType: ListingType;
   numberOfRooms: number;
   propertyType: PropertyType;

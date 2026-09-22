@@ -38,6 +38,9 @@ public class Listing {
     @Column(nullable = false)
     private String location;
 
+    @Column(nullable = false)
+    private String phoneNumber;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ListingType listingType;

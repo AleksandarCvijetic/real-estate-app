@@ -23,6 +23,7 @@ public class ListingUpdateRequest {
     private Double area;
 
     private String location;
+    private String phoneNumber;
     private ListingType listingType;
 
     @Positive

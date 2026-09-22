@@ -20,6 +20,7 @@ public class ListingResponse {
     private BigDecimal price;
     private Double area;
     private String location;
+    private String phoneNumber;
     private ListingType listingType;
     private Double numberOfRooms;
     private PropertyType propertyType;

@@ -15,6 +15,7 @@ export interface ListingFormValues {
   price: string;
   area: string;
   location: string;
+  phoneNumber: string;
   listingType: "" | ListingType;
   numberOfRooms: string;
   propertyType: "" | PropertyType;
@@ -31,6 +32,7 @@ export const EMPTY_LISTING_FORM: ListingFormValues = {
   price: "",
   area: "",
   location: "",
+  phoneNumber: "",
   listingType: "",
   numberOfRooms: "",
   propertyType: "",
@@ -51,6 +53,7 @@ export function toCreateRequest(values: ListingFormValues): ListingCreateRequest
     price === undefined ||
     area === undefined ||
     numberOfRooms === undefined ||
+    !values.phoneNumber.trim() ||
     !values.listingType ||
     !values.propertyType ||
     !values.furnishingStatus ||
@@ -65,6 +68,7 @@ export function toCreateRequest(values: ListingFormValues): ListingCreateRequest
     price,
     area,
     location: values.location.trim(),
+    phoneNumber: values.phoneNumber.trim(),
     listingType: values.listingType,
     numberOfRooms,
     propertyType: values.propertyType,

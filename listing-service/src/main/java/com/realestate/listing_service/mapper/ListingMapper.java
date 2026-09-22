@@ -14,6 +14,7 @@ public class ListingMapper {
                 .price(listing.getPrice())
                 .area(listing.getArea())
                 .location(listing.getLocation())
+                .phoneNumber(listing.getPhoneNumber())
                 .listingType(listing.getListingType())
                 .numberOfRooms(listing.getNumberOfRooms())
                 .propertyType(listing.getPropertyType())

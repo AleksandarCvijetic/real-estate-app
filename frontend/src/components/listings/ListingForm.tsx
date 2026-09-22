@@ -122,6 +122,18 @@ export function ListingForm({ submitLabel, submittingLabel, cancelTo, onSubmit }
               onChange={(e) => set("location", e.target.value)}
             />
           </label>
+          <label className="field">
+            <span>Broj telefona</span>
+            <input
+              className="control"
+              type="tel"
+              required
+              maxLength={30}
+              placeholder="npr. 06X/XXX-XXXX"
+              value={values.phoneNumber}
+              onChange={(e) => set("phoneNumber", e.target.value)}
+            />
+          </label>
         </div>
       </section>
 

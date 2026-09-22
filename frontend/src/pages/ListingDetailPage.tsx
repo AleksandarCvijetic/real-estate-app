@@ -78,6 +78,13 @@ export function ListingDetailPage() {
             <h2>Opis</h2>
             <p className="detail__description">{listing.description}</p>
           </section>
+
+          <section className="detail__section">
+            <h2>Kontakt</h2>
+            <p className="detail__description">
+              <a href={`tel:${listing.phoneNumber}`}>{listing.phoneNumber}</a>
+            </p>
+          </section>
         </article>
       )}
     </>
