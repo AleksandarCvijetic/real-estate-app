@@ -34,7 +34,7 @@ public class UserController {
     }
 
     // Interni poziv drugih servisa (npr. notification-service za email primaoca poruke),
-    // zato bez autentifikacije - vidi SecurityConfig.
+    // zato bez autentifikacije
     @GetMapping("/{id:[0-9]+}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         User user = userRepository.findById(id)
