@@ -10,11 +10,11 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     # Baza
-    database_url: str = "postgresql+psycopg://postgres:super@localhost:5432/ai_service_db"
+    database_url: str = "postgresql+psycopg://postgres:super@localhost:5433/ai_service_db"
 
     # Embedding model
-    embedding_model: str = "intfloat/multilingual-e5-small"
-    embedding_dimension: int = 384
+    embedding_model: str = "intfloat/multilingual-e5-base"
+    embedding_dimension: int = 768
     query_prefix: str = "query: "
     passage_prefix: str = "passage: "
 
