@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { useAsyncData } from "../hooks/useAsyncData";
 import { FavoriteButton } from "../components/listings/FavoriteButton";
 import { ReportListingButton } from "../components/listings/ReportListingButton";
+import { ContactOwnerButton } from "../components/messages/ContactOwnerButton";
 import { formatArea, formatBoolean, formatDate, formatFloor, formatPrice, formatRooms } from "../lib/format";
 import { resolveImageUrl } from "../lib/imageUrl";
 import {
@@ -95,6 +96,7 @@ export function ListingDetailPage() {
             </p>
             {user && user.id !== listing.ownerId && (
               <div className="detail__actions">
+                <ContactOwnerButton listingId={listing.id} />
                 <FavoriteButton listingId={listing.id} ownerId={listing.ownerId} variant="labeled" />
                 <ReportListingButton listingId={listing.id} />
               </div>
@@ -104,7 +106,7 @@ export function ListingDetailPage() {
                 <Link to="/login" state={{ from: location.pathname }}>
                   Prijavi se
                 </Link>{" "}
-                da sačuvaš oglas u omiljene ili ga prijaviš.
+                da pošalješ poruku vlasniku, sačuvaš oglas u omiljene ili ga prijaviš.
               </p>
             )}
           </header>

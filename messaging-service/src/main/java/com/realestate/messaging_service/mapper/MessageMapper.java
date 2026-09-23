@@ -13,7 +13,7 @@ public class MessageMapper {
                 .conversationId(message.getConversation().getId())
                 .senderId(message.getSenderId())
                 .text(message.getText())
-                .sentAt(message.getSentAt())
+                .sentAt(TimeMapper.toInstant(message.getSentAt()))
                 .status(message.getStatus())
                 .build();
     }

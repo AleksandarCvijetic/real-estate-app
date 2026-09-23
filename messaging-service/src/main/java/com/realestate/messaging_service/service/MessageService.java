@@ -53,6 +53,9 @@ public class MessageService {
         messageRepository.save(message);
 
         conversation.setLastMessageAt(message.getSentAt());
+        // Nova poruka vraca razgovor u listu obojici, i ako ga je neko ranije obrisao.
+        conversation.setDeletedByUser1(false);
+        conversation.setDeletedByUser2(false);
         conversationRepository.save(conversation);
 
         messageEventProducer.publishMessageSent(message);

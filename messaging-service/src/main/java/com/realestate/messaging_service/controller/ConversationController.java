@@ -30,6 +30,11 @@ public class ConversationController {
         return ResponseEntity.ok(conversationService.getMyConversations(SecurityUtils.getCurrentUserId()));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ConversationResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(conversationService.getById(id, SecurityUtils.getCurrentUserId()));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         conversationService.delete(id, SecurityUtils.getCurrentUserId());

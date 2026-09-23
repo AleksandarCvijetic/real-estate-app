@@ -9,6 +9,7 @@ import { CreateListingPage } from "./pages/CreateListingPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { FavoritesPage } from "./pages/FavoritesPage";
 import { AdminReportsPage } from "./pages/AdminReportsPage";
+import { MessagesPage } from "./pages/MessagesPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AdminRoute } from "./components/AdminRoute";
 import { AppLayout } from "./components/layout/AppLayout";
@@ -35,6 +36,8 @@ function App() {
           <Route path="/favorites" element={<FavoritesPage />} />
           <Route path="/listings/new" element={<CreateListingPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/messages" element={<MessagesPage />} />
+          <Route path="/messages/:conversationId" element={<MessagesPage />} />
           <Route
             path="/admin/reports"
             element={

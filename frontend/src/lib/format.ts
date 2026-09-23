@@ -32,3 +32,14 @@ export function formatDate(iso: string): string {
 export function formatBoolean(value: boolean): string {
   return value ? "Da" : "Ne";
 }
+
+const timeFormatter = new Intl.DateTimeFormat(LOCALE, { hour: "2-digit", minute: "2-digit" });
+const shortDateFormatter = new Intl.DateTimeFormat(LOCALE, { day: "numeric", month: "numeric" });
+
+// Vreme poruke: danas samo sat, inace i datum.
+export function formatMessageTime(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  const isToday = date.toDateString() === new Date().toDateString();
+  return isToday ? timeFormatter.format(date) : `${shortDateFormatter.format(date)} ${timeFormatter.format(date)}`;
+}

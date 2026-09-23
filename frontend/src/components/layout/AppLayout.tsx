@@ -1,6 +1,7 @@
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { FavoritesProvider } from "../../context/FavoritesContext";
+import { MessagesNavLink } from "../messages/MessagesNavLink";
 
 export function AppLayout() {
   const { user, isLoading, logout } = useAuth();
@@ -23,6 +24,7 @@ export function AppLayout() {
               <>
                 <NavLink to="/my-listings">Moji oglasi</NavLink>
                 <NavLink to="/favorites">Omiljeni</NavLink>
+                <MessagesNavLink />
               </>
             )}
             {user?.role === "ADMIN" && <NavLink to="/admin/reports">Prijave</NavLink>}

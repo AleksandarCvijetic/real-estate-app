@@ -10,9 +10,7 @@ import lombok.*;
 @Builder
 public class ConversationCreateRequest {
 
+    // Primalac se ne salje: to je uvek vlasnik oglasa, koga messaging-service pita Listing servis.
     @NotNull
     private Long listingId;
-
-    @NotNull
-    private Long receiverId;
 }

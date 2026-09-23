@@ -3,7 +3,7 @@ package com.realestate.messaging_service.dto;
 import com.realestate.messaging_service.entity.enums.MessageStatus;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -16,6 +16,6 @@ public class MessageResponse {
     private Long conversationId;
     private Long senderId;
     private String text;
-    private LocalDateTime sentAt;
+    private Instant sentAt;
     private MessageStatus status;
 }

@@ -6,6 +6,8 @@ import com.realestate.messaging_service.event.MessageSentEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +24,17 @@ public class MessageEventProducer {
                 message.getText(),
                 message.getSentAt()
         );
-        kafkaTemplate.send(TOPIC, event);
+        // Salje se tek posle commit-a, da obavestenje ne ode za poruku koja nije sacuvana.
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    kafkaTemplate.send(TOPIC, event);
+                }
+            });
+        } else {
+            kafkaTemplate.send(TOPIC, event);
+        }
     }
 
     private Long resolveReceiverId(Message message) {
