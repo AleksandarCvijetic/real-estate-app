@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { isAxiosError } from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { authApi } from "../../api/authApi";
 import { useAuth } from "../../context/AuthContext";
 import { getApiErrorMessage } from "../../lib/apiError";
@@ -8,6 +8,9 @@ import { getApiErrorMessage } from "../../lib/apiError";
 export function LoginForm() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  // Stranica sa koje je korisnik poslat na prijavu (header, detalji oglasa, zasticena ruta).
+  const redirectTo = (location.state as { from?: string } | null)?.from ?? "/";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,7 +27,7 @@ export function LoginForm() {
     setIsSubmitting(true);
     try {
       await login({ email, password });
-      navigate("/");
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       setEmailNotVerified(isAxiosError(err) && err.response?.status === 403);
       setError(getApiErrorMessage(err));
@@ -84,6 +87,9 @@ export function LoginForm() {
 
       <p className="auth-form__switch">
         Nemaš nalog? <Link to="/register">Registruj se</Link>
+      </p>
+      <p className="auth-form__switch">
+        <Link to="/">← Nazad na oglase</Link>
       </p>
     </form>
   );

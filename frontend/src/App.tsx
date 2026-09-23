@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { VerifyEmailPage } from "./pages/VerifyEmailPage";
@@ -17,19 +17,23 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/verify-email" element={<VerifyEmailPage />} />
-      <Route
-        element={
-          <ProtectedRoute>
-            <AppLayout />
-          </ProtectedRoute>
-        }
-      >
+      <Route element={<AppLayout />}>
+        {/* Pregled i pretraga oglasa su javni. */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/my-listings" element={<MyListingsPage />} />
-        <Route path="/favorites" element={<FavoritesPage />} />
-        <Route path="/listings/new" element={<CreateListingPage />} />
         <Route path="/listings/:id" element={<ListingDetailPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
+
+        <Route
+          element={
+            <ProtectedRoute>
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/my-listings" element={<MyListingsPage />} />
+          <Route path="/favorites" element={<FavoritesPage />} />
+          <Route path="/listings/new" element={<CreateListingPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+        </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

@@ -27,6 +27,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,
                                 "/api/listings/search",
                                 "/api/listings/semantic-search").permitAll()
+                        // Detalji oglasa su javni; regex da se ne poklope /my, /report...
+                        .requestMatchers(HttpMethod.GET, "/api/listings/{id:\\d+}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/listings/*/images/**").permitAll()
                         .anyRequest().authenticated()
                 )

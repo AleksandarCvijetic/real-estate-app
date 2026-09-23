@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { listingApi } from "../api/listingApi";
+import { useAuth } from "./AuthContext";
 
 interface FavoritesContextValue {
   isLoaded: boolean;
@@ -21,12 +22,16 @@ function withId(ids: Set<number>, listingId: number, present: boolean): Set<numb
 }
 
 // Skup ID-jeva omiljenih oglasa, ucitan jednom po prijavi, da bi srce bilo tacno na svakoj stranici.
+// Za neprijavljenog korisnika nista se ne ucitava (omiljeni zahtevaju prijavu).
 export function FavoritesProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+  const userId = user?.id;
   const [favoriteIds, setFavoriteIds] = useState<Set<number>>(() => new Set());
   const [pendingIds, setPendingIds] = useState<Set<number>>(() => new Set());
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
+    if (userId == null) return;
     let cancelled = false;
     listingApi.getMyFavorites().then(
       (favorites) => {
@@ -39,7 +44,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [userId]);
 
   const isFavorite = useCallback((listingId: number) => favoriteIds.has(listingId), [favoriteIds]);
   const isPending = useCallback((listingId: number) => pendingIds.has(listingId), [pendingIds]);

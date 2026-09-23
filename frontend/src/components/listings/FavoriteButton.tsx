@@ -15,8 +15,8 @@ export function FavoriteButton({ listingId, ownerId, variant = "icon" }: Favorit
   const { isFavorite, isPending, toggleFavorite } = useFavorites();
   const [error, setError] = useState<string | null>(null);
 
-  // Svoj oglas korisnik ne cuva u omiljene.
-  if (user?.id === ownerId) return null;
+  // Omiljeni zahtevaju prijavu, a svoj oglas korisnik ne cuva u omiljene.
+  if (!user || user.id === ownerId) return null;
 
   const active = isFavorite(listingId);
   const label = active ? "Ukloni iz omiljenih" : "Dodaj u omiljene";

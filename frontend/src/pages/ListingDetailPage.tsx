@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { listingApi } from "../api/listingApi";
 import { useAuth } from "../context/AuthContext";
 import { useAsyncData } from "../hooks/useAsyncData";
@@ -19,6 +19,7 @@ import {
 export function ListingDetailPage() {
   const { id = "" } = useParams();
   const { user } = useAuth();
+  const location = useLocation();
 
   const fetchListing = useCallback(() => listingApi.getById(id), [id]);
   const { data: listing, error, isLoading } = useAsyncData(fetchListing);
@@ -92,11 +93,19 @@ export function ListingDetailPage() {
               {formatPrice(listing.price)}
               {listing.listingType === "RENT" && <small> / mesečno</small>}
             </p>
-            {user?.id !== listing.ownerId && (
+            {user && user.id !== listing.ownerId && (
               <div className="detail__actions">
                 <FavoriteButton listingId={listing.id} ownerId={listing.ownerId} variant="labeled" />
                 <ReportListingButton listingId={listing.id} />
               </div>
+            )}
+            {!user && (
+              <p className="detail__guest-hint">
+                <Link to="/login" state={{ from: location.pathname }}>
+                  Prijavi se
+                </Link>{" "}
+                da sačuvaš oglas u omiljene ili ga prijaviš.
+              </p>
             )}
           </header>
 

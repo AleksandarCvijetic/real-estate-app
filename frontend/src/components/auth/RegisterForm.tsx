@@ -131,6 +131,9 @@ export function RegisterForm() {
       <p className="auth-form__switch">
         Već imaš nalog? <Link to="/login">Prijavi se</Link>
       </p>
+      <p className="auth-form__switch">
+        <Link to="/">← Nazad na oglase</Link>
+      </p>
     </form>
   );
 }
