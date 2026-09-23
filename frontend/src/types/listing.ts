@@ -62,6 +62,12 @@ export interface ListingSearchRequest {
   petFriendly?: boolean;
 }
 
+// Odgovor semanticke pretrage: oglas + slicnost sa upitom, vec sortirano po relevantnosti.
+export interface SemanticListingResult {
+  listing: Listing;
+  score: number;
+}
+
 export interface Page<T> {
   content: T[];
   totalElements: number;

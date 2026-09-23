@@ -3,6 +3,7 @@ import { parseNumber as toNumber } from "./parseNumber";
 
 // Vrednosti iz forme ostaju stringovi (kontrolisani inputi); u zahtev se pretvaraju tek pri primeni filtera.
 export interface ListingFilterValues {
+  query: string; // tekst iz search bara -> semanticka (AI) pretraga
   location: string;
   listingType: "" | ListingType;
   propertyType: "" | PropertyType;
@@ -16,6 +17,7 @@ export interface ListingFilterValues {
 }
 
 export const EMPTY_FILTERS: ListingFilterValues = {
+  query: "",
   location: "",
   listingType: "",
   propertyType: "",
@@ -29,6 +31,7 @@ export const EMPTY_FILTERS: ListingFilterValues = {
 };
 
 // Prazna polja se izostavljaju; parking/ljubimci filtriraju samo kada su cekirani.
+// Upit (query) nije deo filtera - salje se posebno, samo semantickoj pretrazi.
 export function toSearchRequest(values: ListingFilterValues): ListingSearchRequest {
   return {
     location: values.location.trim() || undefined,

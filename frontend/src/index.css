@@ -597,6 +597,11 @@ button {
   flex: 1;
 }
 
+.filters__hint {
+  margin: -8px 0 0;
+  font-size: 13px;
+}
+
 .filters__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));

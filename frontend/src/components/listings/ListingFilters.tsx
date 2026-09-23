@@ -29,17 +29,32 @@ export function ListingFilters({ values, onChange, onSubmit, onReset }: ListingF
         <input
           className="control"
           type="search"
-          placeholder="Pretraži po lokaciji (grad, naselje, ulica)..."
-          aria-label="Pretraga po lokaciji"
-          value={values.location}
-          onChange={(e) => set("location", e.target.value)}
+          placeholder="Primer: dvosoban stan za studente"
+          aria-label="Opiši šta tražiš"
+          value={values.query}
+          onChange={(e) => set("query", e.target.value)}
         />
         <button type="submit" className="btn btn--primary">
           Pretraži
         </button>
       </div>
 
+      <p className="filters__hint">
+        Opiši svojim rečima kakvu nekretninu tražiš. Rezultati se rangiraju po tome koliko odgovaraju opisu.
+      </p>
+
       <div className="filters__grid">
+        <label className="field">
+          <span>Lokacija</span>
+          <input
+            className="control"
+            type="text"
+            placeholder="Grad, naselje, ulica"
+            value={values.location}
+            onChange={(e) => set("location", e.target.value)}
+          />
+        </label>
+
         <label className="field">
           <span>Tip oglasa</span>
           <select

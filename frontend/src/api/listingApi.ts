@@ -9,6 +9,7 @@ import type {
   Report,
   ReportCreateRequest,
   ReportStatus,
+  SemanticListingResult,
 } from "../types/listing";
 
 export interface SearchParams {
@@ -40,6 +41,12 @@ export const listingApi = {
     apiClient
       .post<RawPage<Listing>>("/listings/search", request, { params })
       .then((res) => normalizePage(res.data)),
+
+  // AI servis rangira oglase po znacenju upita, a listing-service na njih primenjuje filtere.
+  semanticSearch: (query: string, filters: ListingSearchRequest, limit: number) =>
+    apiClient
+      .post<SemanticListingResult[]>("/listings/semantic-search", { query, filters, limit })
+      .then((res) => res.data.map((result) => result.listing)),
 
   create: (request: ListingCreateRequest) => apiClient.post<Listing>("/listings", request).then((res) => res.data),
 

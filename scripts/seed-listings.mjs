@@ -4,8 +4,10 @@
 //   node scripts/seed-listings.mjs ["putanja/do/foldera/sa/slikama"]
 //
 // Kredencijali se unose interaktivno ili preko SEED_EMAIL / SEED_PASSWORD.
-// Oglasi koji vec postoje kod tog korisnika (isti naslov) se preskacu,
-// pa je skriptu bezbedno pokrenuti vise puta.
+// 1. Brisu se oglasi iz prethodne verzije demo podataka (OLD_DEMO_TITLES) koje ima taj korisnik.
+// 2. Kreiraju se oglasi iz LISTINGS; oni koji vec postoje (isti naslov) se preskacu.
+// Sve ide kroz API, pa listing-service salje CREATED/DELETED dogadjaje i ai-service azurira indeks.
+// Skriptu je bezbedno pokrenuti vise puta.
 
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -26,126 +28,142 @@ const IMG = {
   klasicanLuster: 'istockphoto-1990444472-612x612.jpg',
 };
 
+// Naslovi prve verzije demo oglasa - brisu se pre kreiranja novih.
+const OLD_DEMO_TITLES = [
+  'Dvosoban stan u starogradnji, Dorćol',
+  'Luksuzan trosoban stan sa staklenom pregradom',
+  'Svetao jednoiposoban stan na Limanu',
+  'Novogradnja, dvoiposoban stan sa lođom',
+  'Moderan stan sa otvorenom kuhinjom, Vračar',
+  'Garsonjera za studente, blizu fakulteta',
+  'Prostran trosoban stan sa velikim prozorima',
+  'Dvosoban stan sa trpezarijom, Zvezdara',
+  'Četvorosoban stan u austrougarskoj zgradi',
+  'Jednosoban stan, Kragujevac centar',
+  'Porodična kuća sa dvorištem, Sremska Kamenica',
+  'Kuća za izdavanje, Voždovac',
+];
+
 const LISTINGS = [
   {
-    title: 'Dvosoban stan u starogradnji, Dorćol',
+    title: 'Garsonjera na Limanu, kod kampusa',
     description:
-      'Prostran dvosoban stan u mirnoj ulici na Dorćolu, u zgradi iz 1930-ih. Visoki plafoni, originalni parket riblja kost i ' +
-      'dvokrilna vrata. Dnevna soba odvojena od radnog kutka, kupatilo renovirano 2022. Na pešačkoj udaljenosti od Knez Mihailove i Kalemegdana.',
-    price: 189000, area: 64, location: 'Beograd, Dorćol', phoneNumber: '064 218 3345',
-    listingType: 'SALE', numberOfRooms: 2, propertyType: 'APARTMENT', floor: 2,
-    furnishingStatus: 'SEMI_FURNISHED', heatingType: 'CENTRAL', parking: false, petFriendly: true,
-    images: [IMG.starogradnjaParket, IMG.klasicanLuster],
-  },
-  {
-    title: 'Luksuzan trosoban stan sa staklenom pregradom',
-    description:
-      'Moderan trosoban stan u novogradnji sa podzemnom garažom. Kuhinja je od dnevnog boravka odvojena staklenom pregradom u ' +
-      'industrijskom stilu, ugrađeni aparati, podno grejanje. Zgrada ima lift i video nadzor. Useljiv odmah.',
-    price: 1150, area: 88, location: 'Beograd, Novi Beograd, Blok 67', phoneNumber: '063 771 0921',
-    listingType: 'RENT', numberOfRooms: 3, propertyType: 'APARTMENT', floor: 5,
-    furnishingStatus: 'FURNISHED', heatingType: 'CENTRAL', parking: true, petFriendly: false,
-    images: [IMG.modernStaklo, IMG.otvorenaKuhinja],
-  },
-  {
-    title: 'Svetao jednoiposoban stan na Limanu',
-    description:
-      'Svetao i prozračan stan na Limanu 3, na pet minuta od Štranda i Univerziteta. Parket, nove PVC stolarije, lepo ' +
-      'opremljen. Idealan za par ili zaposlenog pojedinca. Kućni ljubimci dozvoljeni uz dogovor.',
-    price: 520, area: 45, location: 'Novi Sad, Liman 3', phoneNumber: '065 402 1187',
-    listingType: 'RENT', numberOfRooms: 1.5, propertyType: 'APARTMENT', floor: 3,
-    furnishingStatus: 'FURNISHED', heatingType: 'CENTRAL', parking: false, petFriendly: true,
-    images: [IMG.svetloBiljke],
-  },
-  {
-    title: 'Novogradnja, dvoiposoban stan sa lođom',
-    description:
-      'Dvoiposoban stan u novijoj zgradi (2021) na Novom naselju. Veliki francuski prozori, lođa od 6 m², etažno grejanje ' +
-      'na gas. Stan se prodaje prazan, uknjižen, bez tereta. Uz stan ide i parking mesto u dvorištu.',
-    price: 142000, area: 62, location: 'Novi Sad, Novo naselje', phoneNumber: '062 889 4410',
-    listingType: 'SALE', numberOfRooms: 2.5, propertyType: 'APARTMENT', floor: 4,
-    furnishingStatus: 'UNFURNISHED', heatingType: 'ETAZNO', parking: true, petFriendly: true,
-    images: [IMG.sivoNovogradnja],
-  },
-  {
-    title: 'Moderan stan sa otvorenom kuhinjom, Vračar',
-    description:
-      'Potpuno renoviran dvosoban stan na Vračaru, blizu Hrama Svetog Save. Otvoren koncept kuhinje i dnevnog boravka, ' +
-      'kuhinja po meri sa kamenom radnom pločom, ugrađeni plakari. Klima uređaj u svakoj prostoriji.',
-    price: 215000, area: 58, location: 'Beograd, Vračar', phoneNumber: '064 330 5528',
-    listingType: 'SALE', numberOfRooms: 2, propertyType: 'APARTMENT', floor: 3,
+      'Uredna garsonjera na pet minuta hoda od Univerzitetskog kampusa i Prirodno-matematičkog fakulteta. Idealna za jednu osobu, sa radnim kutkom pored prozora. U zgradi je tiho, a do centra se stiže biciklom za deset minuta.',
+    price: 260, area: 26, location: 'Novi Sad, Liman 1',
+    listingType: 'RENT', propertyType: 'APARTMENT', numberOfRooms: 1.0, floor: 2,
     furnishingStatus: 'FURNISHED', heatingType: 'CENTRAL', parking: false, petFriendly: false,
-    images: [IMG.otvorenaKuhinja, IMG.modernStaklo],
-  },
-  {
-    title: 'Garsonjera za studente, blizu fakulteta',
-    description:
-      'Kompaktna i funkcionalna garsonjera, potpuno opremljena: radni sto, kauč na razvlačenje, TV i internet. Na deset minuta ' +
-      'hoda od Kampusa. Režije oko 60 EUR mesečno. Pogodna za studenta, izdaje se na minimum 6 meseci.',
-    price: 290, area: 24, location: 'Novi Sad, Grbavica', phoneNumber: '061 554 7702',
-    listingType: 'RENT', numberOfRooms: 1, propertyType: 'APARTMENT', floor: 1,
-    furnishingStatus: 'FURNISHED', heatingType: 'ELECTRIC', parking: false, petFriendly: false,
+    phoneNumber: '064/123-4567',
     images: [IMG.garsonjera],
   },
   {
-    title: 'Prostran trosoban stan sa velikim prozorima',
+    title: 'Dvosoban stan sa dve odvojene sobe, Grbavica',
     description:
-      'Izuzetno svetao trosoban stan sa tri velika prozora u dnevnoj sobi, visina plafona 3,2 m. Ugrađena biblioteka, ' +
-      'dve spavaće sobe, kuhinja sa trpezarijom. Mirna ulica, blizu parka i osnovne škole.',
-    price: 650, area: 82, location: 'Niš, Centar', phoneNumber: '063 612 9034',
-    listingType: 'RENT', numberOfRooms: 3, propertyType: 'APARTMENT', floor: 2,
-    furnishingStatus: 'SEMI_FURNISHED', heatingType: 'CENTRAL', parking: false, petFriendly: true,
+      'Stan sa dve potpuno odvojene sobe, pogodan za dvoje koji dele troškove stanovanja. Svaka soba ima svoj krevet, ormar i radni sto. Do Tehnološkog i Medicinskog fakulteta ima desetak minuta hoda.',
+    price: 420, area: 49, location: 'Novi Sad, Grbavica',
+    listingType: 'RENT', propertyType: 'APARTMENT', numberOfRooms: 2.0, floor: 3,
+    furnishingStatus: 'FURNISHED', heatingType: 'CENTRAL', parking: false, petFriendly: false,
+    phoneNumber: '063/222-1188',
+    images: [IMG.pogledSpavaca, IMG.sivoNovogradnja],
+  },
+  {
+    title: 'Stan u prizemlju sa ograđenim dvorištem, Telep',
+    description:
+      'Stan u prizemlju male zgrade, sa sopstvenim ograđenim delom dvorišta i izlazom iz dnevne sobe. Vlasnik dozvoljava držanje životinja. U blizini je veliki park u kom ima prostora za trčanje i šetnju.',
+    price: 380, area: 46, location: 'Novi Sad, Telep',
+    listingType: 'RENT', propertyType: 'APARTMENT', numberOfRooms: 2.0, floor: 0,
+    furnishingStatus: 'FURNISHED', heatingType: 'TA_PEC', parking: true, petFriendly: true,
+    phoneNumber: '060/455-9021',
+    images: [IMG.svetloBiljke],
+  },
+  {
+    title: 'Kuća sa velikim dvorištem, Veternik',
+    description:
+      'Kuća sa dvorištem od četiri ara, voćnjakom i mestom za roštilj. Ulica je mirna i bez saobraćaja, a u krugu od tristo metara nalaze se vrtić i osnovna škola. Pogodno za život sa decom.',
+    price: 165000, area: 145, location: 'Veternik',
+    listingType: 'SALE', propertyType: 'HOUSE', numberOfRooms: 4.0, floor: null,
+    furnishingStatus: 'UNFURNISHED', heatingType: 'GAS', parking: true, petFriendly: true,
+    phoneNumber: '021/887-4410',
+    images: [IMG.velikiProzori, IMG.starogradnjaParket],
+  },
+  {
+    title: 'Kuća na obronku Fruške gore, Sremska Kamenica',
+    description:
+      'Kuća okružena zelenilom, daleko od buke i gužve. Sa terase se vidi Dunav i grad u daljini. Vazduh je čist, a komšiluk redak. Do centra Novog Sada ima petnaest minuta vožnje.',
+    price: 205000, area: 175, location: 'Sremska Kamenica',
+    listingType: 'SALE', propertyType: 'HOUSE', numberOfRooms: 5.0, floor: null,
+    furnishingStatus: 'SEMI_FURNISHED', heatingType: 'GAS', parking: true, petFriendly: true,
+    phoneNumber: '065/330-7712',
+    images: [IMG.klasicanLuster, IMG.pogledSpavaca, IMG.velikiProzori],
+  },
+  {
+    title: 'Trosoban stan u novogradnji, Novo naselje',
+    description:
+      'Stan u zgradi staroj dve godine, sa liftom, video nadzorom i garažnim mestom. Vrtić, škola i pijaca su u neposrednoj blizini. Dovoljno prostora za porodicu sa dvoje dece.',
+    price: 620, area: 74, location: 'Novi Sad, Novo naselje',
+    listingType: 'RENT', propertyType: 'APARTMENT', numberOfRooms: 3.0, floor: 4,
+    furnishingStatus: 'SEMI_FURNISHED', heatingType: 'CENTRAL', parking: true, petFriendly: false,
+    phoneNumber: '062/119-4455',
+    images: [IMG.sivoNovogradnja, IMG.otvorenaKuhinja],
+  },
+  {
+    title: 'Stan sa pogledom na Dunav, Podbara',
+    description:
+      'Svetao stan na nekoliko koraka od keja, sa pogledom na reku i Petrovaradinsku tvrđavu. Ujutru se sa prozora vidi izlazak sunca nad vodom. Kej je pravo mesto za jutarnje trčanje ili vožnju bicikla.',
+    price: 125000, area: 64, location: 'Novi Sad, Podbara',
+    listingType: 'SALE', propertyType: 'APARTMENT', numberOfRooms: 2.5, floor: 5,
+    furnishingStatus: 'FURNISHED', heatingType: 'CENTRAL', parking: true, petFriendly: true,
+    phoneNumber: '064/778-2030',
     images: [IMG.velikiProzori, IMG.svetloBiljke],
   },
   {
-    title: 'Dvosoban stan sa trpezarijom, Zvezdara',
+    title: 'Luksuzan stan u strogom centru',
     description:
-      'Uredan dvosoban stan sa zasebnom spavaćom sobom i trpezarijskim delom uz dnevni boravak. Terasa sa pogledom na zelenilo, ' +
-      'podrum uz stan. Dobra povezanost gradskim prevozom, market i pijaca u blizini.',
-    price: 700, area: 55, location: 'Beograd, Zvezdara', phoneNumber: '065 118 2296',
-    listingType: 'RENT', numberOfRooms: 2, propertyType: 'APARTMENT', floor: 6,
+      'Stan vrhunskog kvaliteta na Trgu slobode, sa italijanskim pločicama, ugradnim ormarima i klimom u svakoj prostoriji. Restorani, pozorište i Zmaj Jovina ulica su ispod prozora. Uz stan ide garažno mesto.',
+    price: 265000, area: 88, location: 'Novi Sad, Centar',
+    listingType: 'SALE', propertyType: 'APARTMENT', numberOfRooms: 3.0, floor: 4,
     furnishingStatus: 'FURNISHED', heatingType: 'CENTRAL', parking: true, petFriendly: false,
+    phoneNumber: '063/500-6001',
+    images: [IMG.modernStaklo, IMG.otvorenaKuhinja],
+  },
+  {
+    title: 'Jednosoban stan spreman za useljenje, Detelinara',
+    description:
+      'Potpuno opremljen stan u koji se useljava bez ijednog dodatnog troška. Posteljina, posuđe, veš mašina i internet već su tu. Pogodno za nekoga ko dolazi u grad na kratko i želi da se odmah smesti.',
+    price: 330, area: 34, location: 'Novi Sad, Detelinara',
+    listingType: 'RENT', propertyType: 'APARTMENT', numberOfRooms: 1.0, floor: 1,
+    furnishingStatus: 'FURNISHED', heatingType: 'CENTRAL', parking: false, petFriendly: false,
+    phoneNumber: '060/242-8899',
     images: [IMG.pogledSpavaca],
   },
   {
-    title: 'Četvorosoban stan u austrougarskoj zgradi',
+    title: 'Stan za renoviranje, Bulevar oslobođenja',
     description:
-      'Reprezentativan četvorosoban stan u centru Subotice, u zgradi pod zaštitom države. Visoki plafoni sa gipsanom ' +
-      'dekoracijom, luster, drveni podovi. Idealan za porodicu ili kancelarijski prostor. Etažno grejanje na gas.',
-    price: 118000, area: 104, location: 'Subotica, Centar', phoneNumber: '062 740 3381',
-    listingType: 'SALE', numberOfRooms: 4, propertyType: 'APARTMENT', floor: 1,
-    furnishingStatus: 'UNFURNISHED', heatingType: 'GAS', parking: false, petFriendly: true,
-    images: [IMG.klasicanLuster, IMG.starogradnjaParket, IMG.velikiProzori],
+      'Stan u staroj zgradi na odličnoj adresi, koji čeka novog vlasnika i njegovu ideju. Instalacije i stolarija su u originalnom stanju, pa cena prati potrebno ulaganje. Zgrada ima lift i mirno unutrašnje dvorište.',
+    price: 89000, area: 58, location: 'Novi Sad, Bulevar oslobođenja',
+    listingType: 'SALE', propertyType: 'APARTMENT', numberOfRooms: 2.0, floor: 3,
+    furnishingStatus: 'UNFURNISHED', heatingType: 'CENTRAL', parking: false, petFriendly: false,
+    phoneNumber: '021/661-3300',
+    images: [IMG.starogradnjaParket, IMG.klasicanLuster],
   },
   {
-    title: 'Jednosoban stan, Kragujevac centar',
+    title: 'Kuća za izdavanje u Futogu',
     description:
-      'Renoviran jednosoban stan na drugom spratu zgrade sa liftom, u samom centru grada. Nov nameštaj, klima, ' +
-      'veš mašina. Stan je pogodan za investiciju, trenutno se izdaje.',
-    price: 54000, area: 36, location: 'Kragujevac, Centar', phoneNumber: '064 905 6613',
-    listingType: 'SALE', numberOfRooms: 1, propertyType: 'APARTMENT', floor: 2,
-    furnishingStatus: 'FURNISHED', heatingType: 'TA_PEC', parking: false, petFriendly: false,
-    images: [IMG.sivoNovogradnja, IMG.garsonjera],
+      'Kuća sa prostranom terasom i voćnjakom, u naselju u kom se ljudi poznaju. Autobus do Novog Sada staje na dvesta metara i vozi na svakih petnaest minuta. Dvorište je ograđeno i bezbedno za životinje.',
+    price: 520, area: 115, location: 'Futog',
+    listingType: 'RENT', propertyType: 'HOUSE', numberOfRooms: 3.0, floor: null,
+    furnishingStatus: 'FURNISHED', heatingType: 'GAS', parking: true, petFriendly: true,
+    phoneNumber: '064/905-1177',
+    images: [IMG.svetloBiljke, IMG.pogledSpavaca],
   },
   {
-    title: 'Porodična kuća sa dvorištem, Sremska Kamenica',
+    title: 'Poslovno stambeni prostor, Bistrica',
     description:
-      'Spratna kuća od 140 m² na placu od 5 ari, deset minuta od centra Novog Sada. Prizemlje: dnevni boravak sa kuhinjom ' +
-      'i trpezarijom, sprat: tri spavaće sobe i kupatilo. Uređeno dvorište, garaža za jedan automobil.',
-    price: 235000, area: 140, location: 'Novi Sad, Sremska Kamenica', phoneNumber: '063 227 8850',
-    listingType: 'SALE', numberOfRooms: 4.5, propertyType: 'HOUSE',
-    furnishingStatus: 'SEMI_FURNISHED', heatingType: 'GAS', parking: true, petFriendly: true,
-    images: [IMG.pogledSpavaca, IMG.velikiProzori, IMG.otvorenaKuhinja],
-  },
-  {
-    title: 'Kuća za izdavanje, Voždovac',
-    description:
-      'Prizemna kuća sa dve spavaće sobe i dvorištem, na Voždovcu u mirnom kraju. Potpuno opremljena, ' +
-      'parking za dva automobila u dvorištu. Ljubimci dobrodošli. Depozit u visini jedne kirije.',
-    price: 900, area: 85, location: 'Beograd, Voždovac', phoneNumber: '061 303 4478',
-    listingType: 'RENT', numberOfRooms: 3, propertyType: 'HOUSE',
-    furnishingStatus: 'FURNISHED', heatingType: 'CENTRAL', parking: true, petFriendly: true,
-    images: [IMG.svetloBiljke, IMG.starogradnjaParket],
+      'Stan sa zasebnom prostorijom koja ima poseban ulaz, pogodnom za rad od kuće ili primanje stranaka. Ostatak stana je potpuno odvojen od radnog dela. Parking ispred zgrade i brza internet veza.',
+    price: 480, area: 68, location: 'Novi Sad, Bistrica',
+    listingType: 'RENT', propertyType: 'APARTMENT', numberOfRooms: 2.5, floor: 6,
+    furnishingStatus: 'SEMI_FURNISHED', heatingType: 'CENTRAL', parking: true, petFriendly: false,
+    phoneNumber: '062/808-4512',
+    images: [IMG.garsonjera, IMG.sivoNovogradnja],
   },
 ];
 
@@ -184,12 +202,23 @@ async function main() {
   const password = process.env.SEED_PASSWORD ?? (await ask('Lozinka: ', { hidden: true }));
 
   const { accessToken } = await request('POST', '/users/auth/login', { json: { email, password } });
-  const existingTitles = new Set((await request('GET', '/listings/my', { token: accessToken })).map((l) => l.title));
+  const myListings = await request('GET', '/listings/my', { token: accessToken });
 
+  // 1. Brisanje stare verzije demo oglasa (zajedno sa slikama, omiljenima i prijavama).
+  const oldTitles = new Set(OLD_DEMO_TITLES);
+  let deleted = 0;
+  for (const listing of myListings.filter((l) => oldTitles.has(l.title))) {
+    await request('DELETE', `/listings/${listing.id}`, { token: accessToken });
+    deleted++;
+    console.log(`- obrisan #${listing.id} ${listing.title}`);
+  }
+
+  // 2. Kreiranje novih demo oglasa.
+  const existingTitles = new Set(myListings.map((l) => l.title));
   let created = 0;
   for (const { images, ...listing } of LISTINGS) {
     if (existingTitles.has(listing.title)) {
-      console.log(`- preskacem (vec postoji): ${listing.title}`);
+      console.log(`= preskacem (vec postoji): ${listing.title}`);
       continue;
     }
 
@@ -206,7 +235,7 @@ async function main() {
     console.log(`+ #${saved.id} ${listing.title} (${images.length} slik${images.length === 1 ? 'a' : 'e'})`);
   }
 
-  console.log(`\nGotovo: kreirano ${created}, preskoceno ${LISTINGS.length - created}.`);
+  console.log(`\nGotovo: obrisano ${deleted}, kreirano ${created}, preskoceno ${LISTINGS.length - created}.`);
 }
 
 main().catch((err) => {

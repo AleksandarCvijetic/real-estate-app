@@ -33,7 +33,6 @@ public class ListingEventPublisher {
         send(event);
     }
 
-    /** Kljuc poruke = listingId, pa svi eventi istog oglasa idu u istu particiju i stizu redom. */
     public void send(ListingEvent event) {
         String key = String.valueOf(event.listingId());
         kafkaTemplate.send(topic, key, event).whenComplete((result, ex) -> {
