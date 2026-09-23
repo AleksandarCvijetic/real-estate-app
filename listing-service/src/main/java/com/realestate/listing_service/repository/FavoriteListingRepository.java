@@ -16,4 +16,6 @@ public interface FavoriteListingRepository extends JpaRepository<FavoriteListing
     
     boolean existsByUserIdAndListing_Id(Long userId, Long listingId);
 
+    void deleteByListing_Id(Long listingId);
+
 }

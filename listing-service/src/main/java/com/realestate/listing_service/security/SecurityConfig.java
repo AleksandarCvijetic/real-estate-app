@@ -23,7 +23,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/listings/admin/**").hasRole("ADMIN")
-                        //.requestMatchers(HttpMethod.POST, "/api/listings/report").authenticated()
+                        // Prijavu salje svaki prijavljen korisnik; pregled i odlucivanje su samo za admina.
+                        .requestMatchers(HttpMethod.POST, "/api/listings/report").authenticated()
+                        .requestMatchers("/api/listings/report", "/api/listings/report/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST,
                                 "/api/listings/search",
                                 "/api/listings/semantic-search").permitAll()

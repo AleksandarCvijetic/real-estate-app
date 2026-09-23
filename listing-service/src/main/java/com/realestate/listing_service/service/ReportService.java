@@ -22,6 +22,7 @@ public class ReportService {
 
     private final ReportRepository reportRepository;
     private final ListingRepository listingRepository;
+    private final ListingService listingService;
 
     @Transactional
     public ReportResponse create(ReportCreateRequest request, Long reportingUserId) {
@@ -40,10 +41,42 @@ public class ReportService {
         return ReportMapper.toResponse(reportRepository.save(report));
     }
 
+    @Transactional(readOnly = true)
     public List<ReportResponse> getAll() {
         return reportRepository.findAll().stream()
                 .map(ReportMapper::toResponse)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReportResponse> getByStatus(ReportStatus status) {
+        return reportRepository.findByStatusOrderByCreatedAtDesc(status).stream()
+                .map(ReportMapper::toResponse)
+                .toList();
+    }
+
+    // Prihvatanje prijave brise oglas, a sa njim i sve njegove prijave.
+    @Transactional
+    public void accept(Long id) {
+        Report report = findPendingOrThrow(id);
+        listingService.deleteListing(report.getListing());
+    }
+
+    // Odbijena prijava ostaje zabelezena, oglas ostaje aktivan.
+    @Transactional
+    public ReportResponse reject(Long id) {
+        Report report = findPendingOrThrow(id);
+        report.setStatus(ReportStatus.REJECTED);
+        return ReportMapper.toResponse(reportRepository.save(report));
+    }
+
+    private Report findPendingOrThrow(Long id) {
+        Report report = reportRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Report not found with id: " + id));
+        if (report.getStatus() != ReportStatus.PENDING) {
+            throw new IllegalArgumentException("Report has already been resolved");
+        }
+        return report;
     }
 
     public List<ReportResponse> getByListing(Long listingId) {

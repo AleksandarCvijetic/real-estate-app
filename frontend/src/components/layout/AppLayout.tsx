@@ -25,6 +25,7 @@ export function AppLayout() {
                 <NavLink to="/favorites">Omiljeni</NavLink>
               </>
             )}
+            {user?.role === "ADMIN" && <NavLink to="/admin/reports">Prijave</NavLink>}
           </nav>
 
           {!isLoading && (

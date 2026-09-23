@@ -6,7 +6,9 @@ import com.realestate.listing_service.entity.enums.ListingStatus;
 import com.realestate.listing_service.event.ListingEvent;
 import com.realestate.listing_service.event.ListingEventType;
 import com.realestate.listing_service.mapper.ListingMapper;
+import com.realestate.listing_service.repository.FavoriteListingRepository;
 import com.realestate.listing_service.repository.ListingRepository;
+import com.realestate.listing_service.repository.ReportRepository;
 import com.realestate.listing_service.repository.ListingSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -26,6 +28,8 @@ public class ListingService {
 
     private final ListingRepository listingRepository;
     private final ListingImageService listingImageService;
+    private final FavoriteListingRepository favoriteListingRepository;
+    private final ReportRepository reportRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
@@ -110,8 +114,15 @@ public class ListingService {
     public void delete(Long id, Long currentUserId) {
         Listing listing = findListingOrThrow(id);
         checkOwnership(listing, currentUserId);
+        deleteListing(listing);
+    }
 
+    // Omiljeni i prijave imaju strani kljuc na oglas, pa se brisu pre njega.
+    @Transactional
+    public void deleteListing(Listing listing) {
         Long listingId = listing.getId();
+        favoriteListingRepository.deleteByListing_Id(listingId);
+        reportRepository.deleteByListing_Id(listingId);
         listingImageService.deleteAllForListing(listingId);
         listingRepository.delete(listing);
         eventPublisher.publishEvent(ListingEvent.deleted(listingId));

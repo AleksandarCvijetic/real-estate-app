@@ -15,6 +15,9 @@ public class ReportResponse {
 
     private Long id;
     private Long listingId;
+    private String listingTitle;
+    private String listingLocation;
+    private Long listingOwnerId;
     private Long reportingUserId;
     private ReportReason reason;
     private ReportStatus status;

@@ -3,6 +3,7 @@ package com.realestate.listing_service.controller;
 import com.realestate.listing_service.dto.ReportCreateRequest;
 import com.realestate.listing_service.dto.ReportResponse;
 import com.realestate.listing_service.dto.ReportStatusUpdateRequest;
+import com.realestate.listing_service.entity.enums.ReportStatus;
 import com.realestate.listing_service.security.SecurityUtils;
 import com.realestate.listing_service.service.ReportService;
 import jakarta.validation.Valid;
@@ -26,9 +27,21 @@ public class ReportController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    // Bez parametra vraca sve prijave, sa ?status=PENDING samo one na cekanju (najnovije prve).
     @GetMapping
-    public ResponseEntity<List<ReportResponse>> getAll() {
-        return ResponseEntity.ok(reportService.getAll());
+    public ResponseEntity<List<ReportResponse>> getAll(@RequestParam(required = false) ReportStatus status) {
+        return ResponseEntity.ok(status == null ? reportService.getAll() : reportService.getByStatus(status));
+    }
+
+    @PostMapping("/{id}/accept")
+    public ResponseEntity<Void> accept(@PathVariable Long id) {
+        reportService.accept(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/reject")
+    public ResponseEntity<ReportResponse> reject(@PathVariable Long id) {
+        return ResponseEntity.ok(reportService.reject(id));
     }
 
     @GetMapping("/listing/{listingId}")

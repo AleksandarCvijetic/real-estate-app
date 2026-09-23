@@ -81,3 +81,17 @@ export interface ReportCreateRequest {
   listingId: number;
   reason: ReportReason;
 }
+
+export type ReportStatus = "PENDING" | "REVIEWED" | "REJECTED";
+
+export interface Report {
+  id: number;
+  listingId: number;
+  listingTitle: string;
+  listingLocation: string;
+  listingOwnerId: number;
+  reportingUserId: number;
+  reason: ReportReason;
+  status: ReportStatus;
+  createdAt: string;
+}

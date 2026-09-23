@@ -8,7 +8,9 @@ import { ListingDetailPage } from "./pages/ListingDetailPage";
 import { CreateListingPage } from "./pages/CreateListingPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { FavoritesPage } from "./pages/FavoritesPage";
+import { AdminReportsPage } from "./pages/AdminReportsPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { AdminRoute } from "./components/AdminRoute";
 import { AppLayout } from "./components/layout/AppLayout";
 
 function App() {
@@ -33,6 +35,14 @@ function App() {
           <Route path="/favorites" element={<FavoritesPage />} />
           <Route path="/listings/new" element={<CreateListingPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route
+            path="/admin/reports"
+            element={
+              <AdminRoute>
+                <AdminReportsPage />
+              </AdminRoute>
+            }
+          />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

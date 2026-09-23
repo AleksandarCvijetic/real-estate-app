@@ -6,7 +6,9 @@ import type {
   ListingImage,
   ListingSearchRequest,
   Page,
+  Report,
   ReportCreateRequest,
+  ReportStatus,
 } from "../types/listing";
 
 export interface SearchParams {
@@ -63,4 +65,14 @@ export const listingApi = {
 
   report: (request: ReportCreateRequest) =>
     apiClient.post<unknown>("/listings/report", request).then(() => undefined),
+
+  // Samo za admina.
+  getReports: (status: ReportStatus) =>
+    apiClient.get<Report[]>("/listings/report", { params: { status } }).then((res) => res.data),
+
+  acceptReport: (reportId: number) =>
+    apiClient.post<void>(`/listings/report/${reportId}/accept`).then(() => undefined),
+
+  rejectReport: (reportId: number) =>
+    apiClient.post<Report>(`/listings/report/${reportId}/reject`).then((res) => res.data),
 };

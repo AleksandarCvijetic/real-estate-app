@@ -314,6 +314,15 @@ button {
   color: var(--danger);
 }
 
+.btn--danger-solid {
+  background: var(--danger);
+  color: #fff;
+}
+
+.btn--danger-solid:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -524,6 +533,11 @@ button {
 .badge--accent {
   background: var(--accent-soft);
   color: var(--accent);
+}
+
+.badge--danger {
+  background: var(--danger-bg);
+  color: var(--danger);
 }
 
 .badge--success {
@@ -1051,6 +1065,87 @@ button {
   margin: 0;
   line-height: 1.6;
   white-space: pre-wrap;
+}
+
+/* ---------- Admin: prijave ---------- */
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tabs__tab {
+  padding: 10px 16px;
+  margin-bottom: -1px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tabs__tab:hover {
+  color: var(--text-h);
+}
+
+.tabs__tab.is-active {
+  border-bottom-color: var(--accent);
+  color: var(--accent);
+}
+
+.report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.report-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.report-item__main {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.report-item__title {
+  color: var(--text-h);
+  font-size: 17px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.report-item__title:hover {
+  color: var(--accent);
+}
+
+.report-item__meta {
+  margin: 0;
+  font-size: 13px;
+}
+
+.report-item__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 @media (max-width: 640px) {
