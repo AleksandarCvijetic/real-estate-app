@@ -14,18 +14,13 @@ RETRY_SECONDS = 5
 
 
 async def handle_message(raw: bytes) -> None:
-    """Obradjuje jednu poruku sa topic-a listing-events."""
     try:
         event = ListingEvent.model_validate_json(raw)
     except ValidationError as e:
-        # neispravna poruka se preskace, da ne bi zaustavila obradu ostalih
         log.warning("Neispravna poruka, preskacem: %s", e)
         return
 
     try:
-        # Embedding i upis u bazu su blokirajuce operacije (traju desetine ms).
-        # asyncio.to_thread ih izvrsava u posebnoj niti, da ne bi blokirale
-        # obradu HTTP zahteva (npr. /search) za to vreme.
         if event.event_type == ListingEventType.DELETED:
             await asyncio.to_thread(service.delete_listing, event.listing_id)
             log.info("Obrisan embedding oglasa %s", event.listing_id)

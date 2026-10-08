@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     # Baza
-    database_url: str = "postgresql+psycopg://postgres:super@localhost:5433/ai_service_db"
+    database_url: str  # obavezno: iz .env ili promenljive DATABASE_URL
 
     # Embedding model
     embedding_model: str = "intfloat/multilingual-e5-base"

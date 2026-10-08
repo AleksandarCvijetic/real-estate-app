@@ -26,7 +26,7 @@ HEATING_TYPE = {
     "TA_PEC": "Grejanje na TA peć",
     "ELECTRIC": "Električno grejanje",
     "GAS": "Grejanje na gas",
-    "NONE": None,  # izostavlja se
+    "NONE": None,  
 }
 
 ROOMS = {
@@ -73,7 +73,7 @@ def _size_text(area: float | None, property_type: str | None) -> str | None:
     return None
 
 def build_listing_text(event: ListingEvent) -> str:
-    """Sastavlja tekst oglasa od podataka iz dogadjaja."""
+
     recenice: list[str] = []
 
     # 1. Tip nekretnine, tip oglasa i broj soba

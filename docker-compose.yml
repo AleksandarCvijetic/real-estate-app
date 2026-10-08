@@ -6,7 +6,7 @@ services:
       - "5433:5432"
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: super
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?postavi POSTGRES_PASSWORD u .env}
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./postgres-init:/docker-entrypoint-initdb.d
@@ -80,6 +80,7 @@ services:
     ports:
       - "8080:8080"
     environment:
+      JWT_SECRET: ${JWT_SECRET:?postavi JWT_SECRET u .env}
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka
       EUREKA_INSTANCE_PREFERIPADDRESS: "true"
     depends_on:
@@ -96,6 +97,8 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka
       EUREKA_INSTANCE_PREFERIPADDRESS: "true"
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/user_service_db
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
       SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:29092
     depends_on:
       postgres:
@@ -115,6 +118,8 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka
       EUREKA_INSTANCE_PREFERIPADDRESS: "true"
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/listing_service_db
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
       SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:29092
     volumes:
       - listing-images:/app/uploads/listings
@@ -136,6 +141,8 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka
       EUREKA_INSTANCE_PREFERIPADDRESS: "true"
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/messaging_service_db
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
       SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:29092
     depends_on:
       postgres:
@@ -151,6 +158,8 @@ services:
     ports:
       - "8084:8084"
     environment:
+      MAIL_USERNAME: ${MAIL_USERNAME:?postavi MAIL_USERNAME u .env}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:?postavi MAIL_PASSWORD u .env}
       SPRING_CONFIG_IMPORT: optional:configserver:http://configuration-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka
       EUREKA_INSTANCE_PREFERIPADDRESS: "true"
@@ -167,7 +176,7 @@ services:
     ports:
       - "8085:8085"
     environment:
-      DATABASE_URL: postgresql+psycopg://postgres:super@postgres:5432/ai_service_db
+      DATABASE_URL: postgresql+psycopg://postgres:${POSTGRES_PASSWORD}@postgres:5432/ai_service_db
       KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       EUREKA_SERVER: http://discovery-server:8761/eureka
       INSTANCE_HOST: ai-service

@@ -39,17 +39,14 @@ def delete_listing(listing_id: int) -> int:
 
 
 def search(query: str, top_k: int) -> list[SearchResult]:
-    """Semanticka pretraga: vraca listingId-jeve sortirane po slicnosti sa upitom."""
     vektor = embed_query(query)
 
-    # <=> operator iz pgvector-a: kosinusna udaljenost (0 = isto, 2 = suprotno)
     udaljenost = ListingEmbedding.embedding.cosine_distance(vektor).label("distance")
     stmt = select(ListingEmbedding.listing_id, udaljenost).order_by(udaljenost).limit(top_k)
 
     with SessionLocal() as session:
         redovi = session.execute(stmt).all()
 
-    # slicnost = 1 - udaljenost, da veci broj znaci slicniji oglas
     return [
         SearchResult(listing_id=listing_id, score=round(1 - udaljenost, 4))
         for listing_id, udaljenost in redovi

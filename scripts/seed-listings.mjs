@@ -14,7 +14,7 @@ import path from 'node:path';
 import readline from 'node:readline';
 
 const API = process.env.SEED_API_URL ?? 'http://localhost:8080/api';
-const IMAGE_DIR = process.argv[2] ?? 'C:/Users/acacv/OneDrive/Desktop/slike stanova';
+const IMAGE_DIR = process.argv[2] ?? 'scripts/seed-images';
 
 const IMG = {
   starogradnjaParket: 'istockphoto-1020464734-612x612.jpg',
