@@ -46,6 +46,12 @@
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 		</dependency>
 
+		<!-- Kafka (slanje eventa notification servisu) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-kafka</artifactId>
+		</dependency>
+
 		<!-- Baza podataka -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

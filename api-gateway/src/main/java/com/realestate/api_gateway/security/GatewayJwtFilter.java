@@ -23,10 +23,6 @@ public class GatewayJwtFilter extends OncePerRequestFilter {
     @Value("${jwt.secret}")
     private String secret;
 
-    private static final List<String> PUBLIC_PATHS = List.of(
-            "/api/users/auth/"
-    );
-
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -34,9 +30,7 @@ public class GatewayJwtFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String path = request.getRequestURI();
-
-        if (isPublicPath(path)) {
+        if (isPublicPath(request)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -65,16 +59,35 @@ public class GatewayJwtFilter extends OncePerRequestFilter {
             wrappedRequest.addHeader("X-User-Role", role);
 
             filterChain.doFilter(wrappedRequest, response);
-            return;
 
         } catch (JwtException | IllegalArgumentException e) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
-            return;
         }
     }
 
-    private boolean isPublicPath(String path) {
-        return PUBLIC_PATHS.stream().anyMatch(path::startsWith);
+    private boolean isPublicPath(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        String method = request.getMethod();
+
+        if (path.startsWith("/api/users/auth/")) {
+            return true;
+        }
+
+        if ("POST".equals(method)
+                && (path.equals("/api/listings/search")
+                || path.equals("/api/listings/semantic-search"))) {
+            return true;
+        }
+
+        if ("GET".equals(method)
+                && path.startsWith("/api/listings/")
+                && !path.equals("/api/listings/my")
+                && !path.startsWith("/api/listings/report")
+                && !path.startsWith("/api/listings/favorite")) {
+            return true;
+        }
+
+        return false;
     }
 
     private SecretKey getSigningKey() {

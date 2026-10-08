@@ -34,3 +34,33 @@ replay_pid*
 # OS
 .DS_Store
 Thumbs.db
+
+# Claude Code
+CLAUDE.md
+.claude/
+
+# Tajne (sablon je .env.example)
+.env
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Node
+node_modules/
+dist/
+
+# Spring Initializr
+HELP.md
+
+# Editori
+.vscode/
+
+# Slike oglasa sacuvane pri lokalnom pokretanju i slike za seed skriptu
+uploads/
+scripts/seed-images/
+
+# Git Bash crash dump
+*.stackdump
